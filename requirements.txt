@@ -1,0 +1,3 @@
+blinker==1.3
+liquer==0.0.4
+unicodecsv==0.9.4

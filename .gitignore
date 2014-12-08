@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+venv
+*.gz
+.DS_Store
+*.xml
