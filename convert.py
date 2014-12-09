@@ -51,8 +51,9 @@ class TagSet(object):
             r = DictReader(fp)
 
             for tag in r:
-                tag["lemma form"] = map(unicode.strip,
-                                        tag["lemma form"].split(","))
+                tag["lemma form"] = filter(None, map(unicode.strip,
+                                           tag["lemma form"].split(",")))
+
                 if not hasattr(self, tag["parent"]):
                     setattr(self, tag["parent"], [])
 
@@ -134,19 +135,19 @@ class Lemma(object):
 
     def export_to_xml(self, i, rev=1):
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
-        lemma_tags = self.tag_set.full[self.pos].get("lemma form", [self.pos])
+        lemma_tags = self.tag_set.full[self.pos]["lemma form"]
 
         for forms in self.forms.values():
             for form in forms:
                 if (form.form == self.word and
                         Q(tags__has_all=lemma_tags)(form)):
                     el = ET.SubElement(lemma, "l", t=form.form.lower())
-                    ET.SubElement(el, "g", t=form.pos)
+                    ET.SubElement(el, "g", v=form.pos)
                 else:
                     el = ET.SubElement(lemma, "f", t=form.form.lower())
                 for tag in form.tags:
                     if tag != form.pos:
-                        ET.SubElement(el, "g", t=tag)
+                        ET.SubElement(el, "g", v=tag)
 
         return lemma
 
