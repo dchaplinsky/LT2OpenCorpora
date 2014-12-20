@@ -1,80 +1,81 @@
-name,description,parent,lemma form
-post,частина мови,aux,
-noun,іменник,post,v_naz
-pron,займенник,post,v_naz
-verb,дієслово,post,inf
-adj,прикметник,post,"m,v_naz"
-adjp,дієприкметник,post,"m,v_naz"
-adv,прислівник,post,
-advp,дієприслівник,post,
-prep,прийменник,post,
-predic,присудкове слово,post,
-insert,вставне слово,post,
-conj,сполучник,post,
-part,частка,post,
-excl,вигук,post,
-numr,числівник,post,v_naz
-nmbr,число,aux,
-p,множина,nmbr,
-s,однина,nmbr,
-gndr,рід,aux,
-m,чоловічий,gndr,
-f,жіночий,gndr,
-n,середній,gndr,
-pers,особа,aux,
-1,1-а особа,pers,
-2,2-а особа,pers,
-3,3-а особа,pers,
-case,відмінок,aux,
-v_naz,називний,case,
-v_rod,родовий,case,
-v_dav,давальний,case,
-v_zna,знахідний,case,
-v_oru,орудний,case,
-v_mis,місцевий,case,
-v_kly,кличний,case,
-nv,не відмінюється,case,
-req_case,потребує відмінка,aux,
-rv_naz,потребує називного,req_case,
-rv_rod,потребує родового,req_case,
-rv_dav,потребує давального,req_case,
-rv_zna,потребує знахідного,req_case,
-rv_oru,потребує орудного,req_case,
-rv_mis,потребує місцевого,req_case,
-tense,час,aux,
-futr,майбутній час,tense,
-past,минулий час,tense,
-pres,теперішній час,tense,
-mood,спосіб,aux,
-impr,наказовий спосіб,mood,
-verb_type,форма дієслова,aux,
-inf,початкова форма дієслова,verb_type,
-impers,безособова форма дієслова,verb_type,
-voice,стан,aux,
-actv,активний,voice,
-pasv,пасивний,voice,
-conj_type,вид сполучника,aux,
-subord,підрядний (сполучник),conj_type,
-coord,сурядний (сполучник),conj_type,
-aspc,вид,aux,
-voice,доконане,aspc,
-imperf,недоконане,aspc,
-trns,категорія перехідності,aux,
-tran,перехідне,trns,
-intran,непрехідне,trns,
-forms,форма,aux,
-compb,базова форма,forms,
-compr,порівняльна форма,forms,
-super,найвища форма,forms,
-extra,додаткові,aux,
-bad,покруч,extra,
-rev,зворотна форма (дієслова),extra,
-rare,рідковживане/діалектичне/застаріле,extra,
-ist,істота (людина/людиноподібна істота),extra,
-v-u,альтернативні форми на в-/у- (для правил милозвучності),extra,
-abbr,абревіатура,extra,
-obs,застаріле,extra,
-coll,розмовне,extra,
-dial,діалектне,extra,
-unknown,ще неопрацьовані слова/форми,extra,
-pers,особовий (займенник),extra,
+name,description,parent,lemma form,opencorpora tags
+post,частина мови,aux,,POST
+noun,іменник,post,v_naz,NOUN
+pron,займенник,post,v_naz,NPRO
+verb,дієслово,post,inf,VERB
+adj,прикметник,post,"m,v_naz",ADJF
+adjp,дієприкметник,post,"m,v_naz",PRTF
+adv,прислівник,post,,ADVB
+advp,дієприслівник,post,,GRND
+prep,прийменник,post,,PREP
+predic,присудкове слово,post,,PREDIC
+insert,вставне слово,post,,INSERT
+conj,сполучник,post,,CONJ
+part,частка,post,,PRCL
+excl,вигук,post,,INTJ
+numr,числівник,post,v_naz,NUMR
+nmbr,число,aux,,NMbr
+p,множина,nmbr,,plur
+s,однина,nmbr,,sing
+gndr,рід,aux,,GNdr
+m,чоловічий,gndr,,masc
+f,жіночий,gndr,,femn
+n,середній,gndr,,neut
+pers,особа,aux,,PErs
+1,1-а особа,pers,,1per
+2,2-а особа,pers,,2per
+3,3-а особа,pers,,3per
+case,відмінок,aux,,CAse
+v_naz,називний,case,,nomn
+v_rod,родовий,case,,gent
+v_dav,давальний,case,,datv
+v_zna,знахідний,case,,accs
+v_oru,орудний,case,,ablt
+v_mis,місцевий,case,,loct
+v_kly,кличний,case,,voct
+nv,не відмінюється,case,,Fixd
+req_case,потребує відмінка,aux,,req_case
+rv_naz,потребує називного,req_case,,rv_nomn
+rv_rod,потребує родового,req_case,,rv_gent
+rv_dav,потребує давального,req_case,,rv_datv
+rv_zna,потребує знахідного,req_case,,rv_accs
+rv_oru,потребує орудного,req_case,,rv_ablt
+rv_mis,потребує місцевого,req_case,,rv_loct
+tense,час,aux,,TEns
+futr,майбутній час,tense,,futr
+past,минулий час,tense,,past
+pres,теперішній час,tense,,pres
+mood,спосіб,aux,,MOod
+impr,наказовий спосіб,mood,,impr
+verb_type,форма дієслова,aux,,verb_type
+inf,початкова форма дієслова,verb_type,,INFN
+impers,безособова форма дієслова,verb_type,,Impe
+voice,стан,aux,,VOic
+actv,активний,voice,,actv
+pasv,пасивний,voice,,pssv
+conj_type,вид сполучника,aux,,conj_type
+subord,підрядний (сполучник),conj_type,,subord
+coord,сурядний (сполучник),conj_type,,coord
+aspc,вид,aux,,ASpc
+perf,доконане,aspc,,perf
+imperf,недоконане,aspc,,impf
+trns,категорія перехідності,aux,,TRns
+tran,перехідне,trns,,tran
+intran,непрехідне,trns,,intr
+forms,форма,aux,,
+compb,базова форма,forms,,
+compr,порівняльна форма,forms,,
+super,найвища форма,forms,,Supr
+extra,додаткові,aux,,extra
+bad,покруч,extra,,Dist
+rev,зворотна форма (дієслова),extra,,
+rare,рідковживане/діалектичне/застаріле,extra,,Arch
+ist,істота (людина/людиноподібна істота),extra,,
+v-u,альтернативні форми на в-/у- (для правил милозвучності),extra,,v-u
+abbr,абревіатура,extra,,Abbr
+obs,застаріле,extra,,Arch
+coll,розмовне,extra,,Infr
+dial,діалектне,extra,,
+unknown,ще неопрацьовані слова/форми,extra,,
+pers,особовий (займенник),extra,,
+alt,альтернативний правопис,extra,,

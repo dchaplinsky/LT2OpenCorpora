@@ -46,6 +46,7 @@ class TagSet(object):
     def __init__(self, fname):
         self.all = []
         self.full = {}
+        self.lt2opencorpora = {}
 
         with open(fname, "r") as fp:
             r = DictReader(fp)
@@ -53,6 +54,11 @@ class TagSet(object):
             for tag in r:
                 tag["lemma form"] = filter(None, map(unicode.strip,
                                            tag["lemma form"].split(",")))
+
+                tag["opencorpora tags"] = (
+                    tag["opencorpora tags"] or tag["name"])
+
+                self.lt2opencorpora[tag["name"]] = tag["opencorpora tags"]
 
                 if not hasattr(self, tag["parent"]):
                     setattr(self, tag["parent"], [])
@@ -72,7 +78,10 @@ class TagSet(object):
             if tag["parent"] != "aux":
                 grammem.attrib["parent"] = tag["parent"]
             name = ET.SubElement(grammem, "name")
-            name.text = tag["name"]
+            name.text = tag["opencorpora tags"]
+
+            alias = ET.SubElement(grammem, "alias")
+            alias.text = tag["name"]
 
             description = ET.SubElement(grammem, "description")
             description.text = tag["description"]
@@ -145,9 +154,9 @@ class Lemma(object):
                     ET.SubElement(el, "g", v=form.pos)
                 else:
                     el = ET.SubElement(lemma, "f", t=form.form.lower())
+
                 for tag in form.tags:
-                    if tag != form.pos:
-                        ET.SubElement(el, "g", v=tag)
+                    ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
         return lemma
 
