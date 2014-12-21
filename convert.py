@@ -142,21 +142,26 @@ class Lemma(object):
         else:
             self.forms[form.tags_signature] = [form]
 
+    def _add_tags_to_element(self, el, tags):
+        for tag in tags:
+            ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
+
     def export_to_xml(self, i, rev=1):
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         lemma_tags = self.tag_set.full[self.pos]["lemma form"]
 
         for forms in self.forms.values():
             for form in forms:
+                el = ET.Element("f", t=form.form.lower())
                 if (form.form == self.word and
                         Q(tags__has_all=lemma_tags)(form)):
-                    el = ET.SubElement(lemma, "l", t=form.form.lower())
-                    ET.SubElement(el, "g", v=form.pos)
+                    l_form = ET.SubElement(lemma, "l", t=form.form.lower())
+                    self._add_tags_to_element(l_form, form.tags)
+                    lemma.insert(0, el)
                 else:
-                    el = ET.SubElement(lemma, "f", t=form.form.lower())
+                    lemma.append(el)
 
-                for tag in form.tags:
-                    ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
+                self._add_tags_to_element(el, form.tags)
 
         return lemma
 
