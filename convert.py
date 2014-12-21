@@ -14,6 +14,7 @@ from blinker import signal
 
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 doubleform_signal = signal('doubleform-found')
+lemmas_found_signal = signal('lemmas-found')
 
 is_iterable = lambda x: isinstance(x, (dict, list, tuple, set, frozenset))
 
@@ -149,6 +150,7 @@ class Lemma(object):
     def export_to_xml(self, i, rev=1):
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         lemma_tags = self.tag_set.full[self.pos]["lemma form"]
+        cnt = 0
 
         for forms in self.forms.values():
             for form in forms:
@@ -158,11 +160,13 @@ class Lemma(object):
                     l_form = ET.SubElement(lemma, "l", t=form.form.lower())
                     self._add_tags_to_element(l_form, form.tags)
                     lemma.insert(0, el)
+                    cnt += 1
                 else:
                     lemma.append(el)
 
                 self._add_tags_to_element(el, form.tags)
 
+        lemmas_found_signal.send(self, pos_tag=self.pos, count=cnt)
         return lemma
 
 
@@ -195,12 +199,17 @@ class Dictionary(object):
 
 
 if __name__ == '__main__':
-    from collections import Counter
+    from collections import Counter, defaultdict
     REPEATED_FORMS = Counter()
+    LEMMAS_COUNTER = defaultdict(Counter)
 
     def log_doubleform(sender, tags_signature):
         global REPEATED_FORMS
         REPEATED_FORMS.update({tags_signature: 1})
+
+    def log_lemmas_count(sender, pos_tag, count):
+        global LEMMAS_COUNTER
+        LEMMAS_COUNTER[pos_tag].update([count])
 
     parser = argparse.ArgumentParser(
         description='Convert LT dict to OpenCorpora format.')
@@ -221,6 +230,7 @@ if __name__ == '__main__':
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
         doubleform_signal.connect(log_doubleform)
+        lemmas_found_signal.connect(log_lemmas_count)
 
     d = Dictionary(args.in_file, mapping=args.mapping)
     d.export_to_xml(args.out_file)
@@ -229,3 +239,7 @@ if __name__ == '__main__':
         logging.debug("=" * 50)
         for term, cnt in REPEATED_FORMS.most_common():
             logging.debug(u"%s: %s" % (term, cnt))
+
+        logging.debug("=" * 50)
+        for pos, cnt in LEMMAS_COUNTER.iteritems():
+            logging.debug(u"%s: %s" % (pos, cnt.most_common()))
