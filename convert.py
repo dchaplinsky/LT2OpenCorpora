@@ -150,7 +150,7 @@ class Lemma(object):
     def export_to_xml(self, i, rev=1):
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         lemma_tags = self.tag_set.full[self.pos]["lemma form"]
-        cnt = 0
+        lemmas_candidates = []
 
         for forms in self.forms.values():
             for form in forms:
@@ -160,13 +160,20 @@ class Lemma(object):
                     l_form = ET.SubElement(lemma, "l", t=form.form.lower())
                     self._add_tags_to_element(l_form, form.tags)
                     lemma.insert(0, el)
-                    cnt += 1
+                    lemmas_candidates.append(form)
                 else:
                     lemma.append(el)
 
                 self._add_tags_to_element(el, form.tags)
 
-        lemmas_found_signal.send(self, pos_tag=self.pos, count=cnt)
+        if len(lemmas_candidates) != 1:
+            logging.debug(
+                u"lemma %s got %s lemmas candidates: %s" %
+                (self, len(lemmas_candidates),
+                 u", ".join(map(unicode, lemmas_candidates))))
+
+        lemmas_found_signal.send(
+            self, pos_tag=self.pos, count=len(lemmas_candidates))
         return lemma
 
 
