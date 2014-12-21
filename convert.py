@@ -172,8 +172,11 @@ class Lemma(object):
                 (self, len(lemmas_candidates),
                  u", ".join(map(unicode, lemmas_candidates))))
 
+        lemmas_tags = sorted(map(lambda x: x.tags_signature,
+                                 lemmas_candidates))
+
         lemmas_found_signal.send(
-            self, pos_tag=self.pos, count=len(lemmas_candidates))
+            self, pos_tag=self.pos, lemmas_tags=lemmas_tags)
         return lemma
 
 
@@ -214,9 +217,12 @@ if __name__ == '__main__':
         global REPEATED_FORMS
         REPEATED_FORMS.update({tags_signature: 1})
 
-    def log_lemmas_count(sender, pos_tag, count):
+    def log_lemmas_count(sender, pos_tag, lemmas_tags):
+        if len(lemmas_tags) == 1:
+            return
+
         global LEMMAS_COUNTER
-        LEMMAS_COUNTER[pos_tag].update([count])
+        LEMMAS_COUNTER[pos_tag].update([str(", ".join(lemmas_tags))])
 
     parser = argparse.ArgumentParser(
         description='Convert LT dict to OpenCorpora format.')
