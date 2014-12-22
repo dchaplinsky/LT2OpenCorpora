@@ -14,6 +14,7 @@ from blinker import signal
 
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 doubleform_signal = signal('doubleform-found')
+lemmas_found_signal = signal('lemmas-found')
 
 is_iterable = lambda x: isinstance(x, (dict, list, tuple, set, frozenset))
 
@@ -74,16 +75,16 @@ class TagSet(object):
     def export_to_xml(self):
         grammemes = ET.Element("grammemes")
         for tag in self.full.values():
-            grammem = ET.SubElement(grammemes, "grammem")
+            grammeme = ET.SubElement(grammemes, "grammeme")
             if tag["parent"] != "aux":
-                grammem.attrib["parent"] = tag["parent"]
-            name = ET.SubElement(grammem, "name")
+                grammeme.attrib["parent"] = tag["parent"]
+            name = ET.SubElement(grammeme, "name")
             name.text = tag["opencorpora tags"]
 
-            alias = ET.SubElement(grammem, "alias")
+            alias = ET.SubElement(grammeme, "alias")
             alias.text = tag["name"]
 
-            description = ET.SubElement(grammem, "description")
+            description = ET.SubElement(grammeme, "description")
             description.text = tag["description"]
 
         return grammemes
@@ -144,11 +145,16 @@ class Lemma(object):
 
     def _add_tags_to_element(self, el, tags):
         for tag in tags:
-            ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
+            # For rare cases when tag in the dict is not from tagset
+            if tag in self.tag_set.lt2opencorpora:
+                ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
     def export_to_xml(self, i, rev=1):
+
+        logging.debug(self.pos)
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         lemma_tags = self.tag_set.full[self.pos]["lemma form"]
+        lemmas_candidates = []
 
         for forms in self.forms.values():
             for form in forms:
@@ -157,11 +163,29 @@ class Lemma(object):
                         Q(tags__has_all=lemma_tags)(form)):
                     l_form = ET.SubElement(lemma, "l", t=form.form.lower())
                     self._add_tags_to_element(l_form, form.tags)
-                    lemma.insert(0, el)
+
+                    if not lemmas_candidates:
+                        lemma.insert(0, el)
+
+                    lemmas_candidates.append(form)
                 else:
                     lemma.append(el)
 
                 self._add_tags_to_element(el, form.tags)
+
+        lemmas_tags = sorted(map(lambda x: x.tags_signature,
+                                 lemmas_candidates))
+
+        lemmas_found_signal.send(
+            self, pos_tag=self.pos, lemmas_tags=lemmas_tags)
+
+        if len(lemmas_candidates) != 1:
+            logging.debug(
+                u"lemma %s got %s lemmas candidates: %s" %
+                (self, len(lemmas_candidates),
+                 u", ".join(map(unicode, lemmas_candidates))))
+
+            return
 
         return lemma
 
@@ -189,18 +213,28 @@ class Dictionary(object):
         lemmata = ET.SubElement(root, "lemmata")
 
         for i, lemma in enumerate(self.lemmas.values()):
-            lemmata.append(lemma.export_to_xml(i + 1))
+            lemma_xml = lemma.export_to_xml(i + 1)
+            if lemma_xml is not None:
+                lemmata.append(lemma_xml)
 
         tree.write(fname, encoding="utf-8")
 
 
 if __name__ == '__main__':
-    from collections import Counter
+    from collections import Counter, defaultdict
     REPEATED_FORMS = Counter()
+    LEMMAS_COUNTER = defaultdict(Counter)
 
     def log_doubleform(sender, tags_signature):
         global REPEATED_FORMS
         REPEATED_FORMS.update({tags_signature: 1})
+
+    def log_lemmas_count(sender, pos_tag, lemmas_tags):
+        if len(lemmas_tags) == 1:
+            return
+
+        global LEMMAS_COUNTER
+        LEMMAS_COUNTER[pos_tag].update([str(", ".join(lemmas_tags))])
 
     parser = argparse.ArgumentParser(
         description='Convert LT dict to OpenCorpora format.')
@@ -221,6 +255,7 @@ if __name__ == '__main__':
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
         doubleform_signal.connect(log_doubleform)
+        lemmas_found_signal.connect(log_lemmas_count)
 
     d = Dictionary(args.in_file, mapping=args.mapping)
     d.export_to_xml(args.out_file)
@@ -229,3 +264,7 @@ if __name__ == '__main__':
         logging.debug("=" * 50)
         for term, cnt in REPEATED_FORMS.most_common():
             logging.debug(u"%s: %s" % (term, cnt))
+
+        logging.debug("=" * 50)
+        for pos, cnt in LEMMAS_COUNTER.iteritems():
+            logging.debug(u"%s: %s" % (pos, cnt.most_common()))
