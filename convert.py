@@ -74,16 +74,16 @@ class TagSet(object):
     def export_to_xml(self):
         grammemes = ET.Element("grammemes")
         for tag in self.full.values():
-            grammem = ET.SubElement(grammemes, "grammem")
+            grammeme = ET.SubElement(grammemes, "grammeme")
             if tag["parent"] != "aux":
-                grammem.attrib["parent"] = tag["parent"]
-            name = ET.SubElement(grammem, "name")
+                grammeme.attrib["parent"] = tag["parent"]
+            name = ET.SubElement(grammeme, "name")
             name.text = tag["opencorpora tags"]
 
-            alias = ET.SubElement(grammem, "alias")
+            alias = ET.SubElement(grammeme, "alias")
             alias.text = tag["name"]
 
-            description = ET.SubElement(grammem, "description")
+            description = ET.SubElement(grammeme, "description")
             description.text = tag["description"]
 
         return grammemes
