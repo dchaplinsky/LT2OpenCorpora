@@ -75,16 +75,16 @@ class TagSet(object):
     def export_to_xml(self):
         grammemes = ET.Element("grammemes")
         for tag in self.full.values():
-            grammem = ET.SubElement(grammemes, "grammem")
+            grammeme = ET.SubElement(grammemes, "grammeme")
             if tag["parent"] != "aux":
-                grammem.attrib["parent"] = tag["parent"]
-            name = ET.SubElement(grammem, "name")
+                grammeme.attrib["parent"] = tag["parent"]
+            name = ET.SubElement(grammeme, "name")
             name.text = tag["opencorpora tags"]
 
-            alias = ET.SubElement(grammem, "alias")
+            alias = ET.SubElement(grammeme, "alias")
             alias.text = tag["name"]
 
-            description = ET.SubElement(grammem, "description")
+            description = ET.SubElement(grammeme, "description")
             description.text = tag["description"]
 
         return grammemes
@@ -145,9 +145,13 @@ class Lemma(object):
 
     def _add_tags_to_element(self, el, tags):
         for tag in tags:
-            ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
+            # For rare cases when tag in the dict is not from tagset
+            if tag in self.tag_set.lt2opencorpora:
+                ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
     def export_to_xml(self, i, rev=1):
+
+        logging.debug(self.pos)
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         lemma_tags = self.tag_set.full[self.pos]["lemma form"]
         lemmas_candidates = []
@@ -159,12 +163,21 @@ class Lemma(object):
                         Q(tags__has_all=lemma_tags)(form)):
                     l_form = ET.SubElement(lemma, "l", t=form.form.lower())
                     self._add_tags_to_element(l_form, form.tags)
-                    lemma.insert(0, el)
+
+                    if not lemmas_candidates:
+                        lemma.insert(0, el)
+
                     lemmas_candidates.append(form)
                 else:
                     lemma.append(el)
 
                 self._add_tags_to_element(el, form.tags)
+
+        lemmas_tags = sorted(map(lambda x: x.tags_signature,
+                                 lemmas_candidates))
+
+        lemmas_found_signal.send(
+            self, pos_tag=self.pos, lemmas_tags=lemmas_tags)
 
         if len(lemmas_candidates) != 1:
             logging.debug(
@@ -172,11 +185,8 @@ class Lemma(object):
                 (self, len(lemmas_candidates),
                  u", ".join(map(unicode, lemmas_candidates))))
 
-        lemmas_tags = sorted(map(lambda x: x.tags_signature,
-                                 lemmas_candidates))
+            return
 
-        lemmas_found_signal.send(
-            self, pos_tag=self.pos, lemmas_tags=lemmas_tags)
         return lemma
 
 
@@ -203,7 +213,9 @@ class Dictionary(object):
         lemmata = ET.SubElement(root, "lemmata")
 
         for i, lemma in enumerate(self.lemmas.values()):
-            lemmata.append(lemma.export_to_xml(i + 1))
+            lemma_xml = lemma.export_to_xml(i + 1)
+            if lemma_xml is not None:
+                lemmata.append(lemma_xml)
 
         tree.write(fname, encoding="utf-8")
 
