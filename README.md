@@ -13,7 +13,12 @@ It solves these tasks:
 * Exports tagset, tagset restrictions and all the lemmas to OpenCorpora format. 
 
 ## It's all about grouping
-Grouping wordforms under particular lemma is cumbersome for various reasons. Mostly because of homonymy and internal format of LanguageTool dict. More gore details to follow
+Grouping wordforms under particular lemma is cumbersome for various reasons. Mostly because of homonymy and internal format of LanguageTool dict.
+In short:
+* Entry in LanugageTool dictionary looks like this `wordform tag1:tag2:tag3 lemma`, where lemma is just a string.
+* You cannot tell, to which lemma exactly this entry refers because of homonymy.
+* So you can only apply a bunch of heuristics: lemma should have the same POS as wordform also, lemma should have particular tags. For example, for nouns all lemmas should have :v_naz tag.
+* Another problem with heuristic is that a lot of verb lemmas looks the same for :perf and :imperf tags. But those are two different lemmas and they have their own wordforms!
 
 ## Prerequisites
 ```pip install -r requirements.txt```
