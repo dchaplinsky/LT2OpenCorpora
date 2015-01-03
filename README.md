@@ -14,7 +14,13 @@ Use at your own risk.
 
 ## Visualised mapping between tagsets in a great detail
 ![Mapping](http://i.imgur.com/X2gpPH5.png)
-
+* Cream nodes are for tags found only in OpenCorpora
+* Blue nodes are for tags from LanguageTool only
+* Green nodes are for tags that can be found in both
+* LT tag name is on top
+* OpenCorpora tag name is on bottom
+* Blue links are for OpenCorpora
+* Orange links are for LT
 
 ## Running
 ```python convert.py 1000.txt out.xml --debug```
