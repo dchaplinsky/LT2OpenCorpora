@@ -17,7 +17,6 @@ if __name__ == '__main__':
         node.parent = ""
         nodes_by_opencorpora[child.find("name").text] = node
 
-
     with open("mapping.csv", "r") as fp:
         r = DictReader(fp)
 
@@ -41,7 +40,6 @@ if __name__ == '__main__':
 
             nodes_by_LT[tag["name"]] = node
             nodes_by_opencorpora[tag["opencorpora tags"]] = node
-
 
     for k, node in nodes_by_opencorpora.iteritems():
         graph.add_node(node)

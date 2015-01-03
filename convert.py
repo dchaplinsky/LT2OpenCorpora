@@ -8,7 +8,9 @@ from itertools import ifilter
 import xml.etree.cElementTree as ET
 
 from unicodecsv import DictReader
+# To simlify some queries over iterables
 from liquer import Q, register
+# To add stats collection in inobstrusive way (that can be simply disabled)
 from blinker import signal
 
 
@@ -18,6 +20,7 @@ lemmas_found_signal = signal('lemmas-found')
 
 is_iterable = lambda x: isinstance(x, (dict, list, tuple, set, frozenset))
 
+# Bunch of helpers for liquer lib, most of them aren't used at all
 register('has', lambda x, y: y in x)
 register('ne', lambda x, y: x != y)
 register('has_all',
@@ -35,8 +38,12 @@ register('has_not', lambda x, y: y not in x)
 
 
 def open_any(filename):
-    # No BZIP support because of problems with utf-8 in readlines
-    # implementation
+    """
+    Helper to open also compressed files
+
+    No BZIP support because of problems with utf-8 in readlines
+    implementation
+    """
     if filename.endswith(".gz"):
         return gzip.open
 
@@ -44,6 +51,11 @@ def open_any(filename):
 
 
 class TagSet(object):
+    """
+    Class that represents LanguageTool tagset
+    Can export it to OpenCorpora XML
+    Provides some shorthands to simplify checks/conversions
+    """
     def __init__(self, fname):
         self.all = []
         self.full = {}
@@ -53,20 +65,29 @@ class TagSet(object):
             r = DictReader(fp)
 
             for tag in r:
+                # lemma form column represents set of tags that wordform should
+                # have to be threatened as lemma.
                 tag["lemma form"] = filter(None, map(unicode.strip,
                                            tag["lemma form"].split(",")))
 
+                # opencopropra tags column maps LT tags to OpenCorpora tags
+                # when possible
                 tag["opencorpora tags"] = (
                     tag["opencorpora tags"] or tag["name"])
 
+                # Helper mapping
                 self.lt2opencorpora[tag["name"]] = tag["opencorpora tags"]
 
+                # Parent column links tag to it's group tag.
+                # For example parent tag for noun is POST tag
+                # Parent for m (masculine) is gndr (gender group)
                 if not hasattr(self, tag["parent"]):
                     setattr(self, tag["parent"], [])
 
                 attr = getattr(self, tag["parent"])
                 attr.append(tag["name"])
 
+                # aux is our auxiliary tag to connect our group tags
                 if tag["parent"] != "aux":
                     self.all.append(tag["name"])
 
@@ -91,17 +112,30 @@ class TagSet(object):
 
 
 class WordForm(object):
+    """
+    Class that represents single word form.
+    Initialized out of raw string from LT dictionary.
+    """
     def __init__(self, raw, tag_set):
         raw = unicode(raw.decode('utf-8'))
         self.form, self.lemma, self.tags = raw.split(" ", 3)
 
         self.tags = map(unicode.strip, self.tags.split(u":"))
         self.used = False
+
+        # tags signature is string made out of sorted list of wordform tags
+        # This is a workout for rare cases when some wordform has
+        # noun:m:v_naz and another has noun:v_naz:m
         self.tags_signature = ":".join(sorted(self.tags))
 
+        # Here we are trying to determine exact part of speech for this
+        # wordform
         pos_tags = filter(lambda x: x in tag_set.post, self.tags)
         self.pos = ""
         self.lemma_signature = ""
+
+        # And report cases when it's missing or wordform has more than two
+        # pos tags assigned
         if len(pos_tags) == 0:
             logging.debug(
                 u"word form %s has no POS tag assigned" % self.form)
@@ -150,7 +184,6 @@ class Lemma(object):
                 ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
     def export_to_xml(self, i, rev=1):
-
         logging.debug(self.pos)
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         lemma_tags = self.tag_set.full[self.pos]["lemma form"]
