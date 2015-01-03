@@ -56,3 +56,6 @@ venv
 *.gz
 .DS_Store
 *.xml
+tagged.main.txt
+pymorphy2-dicts/
+bugs.txt

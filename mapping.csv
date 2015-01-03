@@ -8,8 +8,8 @@ adjp,дієприкметник,post,"m,v_naz",PRTF
 adv,прислівник,post,,ADVB
 advp,дієприслівник,post,,GRND
 prep,прийменник,post,,PREP
-predic,присудкове слово,post,,PREDIC
-insert,вставне слово,post,,INSERT
+predic,присудкове слово,post,,PRED
+insert,вставне слово,post,,Prnt
 conj,сполучник,post,,CONJ
 part,частка,post,,PRCL
 excl,вигук,post,,INTJ
@@ -21,10 +21,10 @@ gndr,рід,aux,,GNdr
 m,чоловічий,gndr,,masc
 f,жіночий,gndr,,femn
 n,середній,gndr,,neut
-pers,особа,aux,,PErs
-1,1-а особа,pers,,1per
-2,2-а особа,pers,,2per
-3,3-а особа,pers,,3per
+PErs,особа,aux,,PErs
+1,1-а особа,PErs,,1per
+2,2-а особа,PErs,,2per
+3,3-а особа,PErs,,3per
 case,відмінок,aux,,CAse
 v_naz,називний,case,,nomn
 v_rod,родовий,case,,gent
@@ -62,20 +62,20 @@ imperf,недоконане,aspc,,impf
 trns,категорія перехідності,aux,,TRns
 tran,перехідне,trns,,tran
 intran,непрехідне,trns,,intr
-forms,форма,aux,,
-compb,базова форма,forms,,
-compr,порівняльна форма,forms,,
+forms,степені порівняння,aux,,forms
+compb,базова форма,forms,,compb
+compr,порівняльна форма,forms,,COMP
 super,найвища форма,forms,,Supr
 extra,додаткові,aux,,extra
 bad,покруч,extra,,Dist
-rev,зворотна форма (дієслова),extra,,
+rev,зворотна форма (дієслова),extra,,Refl
 rare,рідковживане/діалектичне/застаріле,extra,,Arch
-ist,істота (людина/людиноподібна істота),extra,,
+ist,істота (людина/людиноподібна істота),extra,,anim
 v-u,альтернативні форми на в-/у- (для правил милозвучності),extra,,v-u
 abbr,абревіатура,extra,,Abbr
 obs,застаріле,extra,,Arch
 coll,розмовне,extra,,Infr
-dial,діалектне,extra,,
-unknown,ще неопрацьовані слова/форми,extra,,
-pers,особовий (займенник),extra,,
-alt,альтернативний правопис,extra,,
+dial,діалектне,extra,,dial
+unknown,ще неопрацьовані слова/форми,extra,,unknown
+pers,особовий (займенник),extra,,pers
+alt,альтернативний правопис,extra,,alt
