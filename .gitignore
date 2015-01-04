@@ -55,7 +55,8 @@ target/
 venv
 *.gz
 .DS_Store
-*.xml
+out.xml
+mapping.png
 tagged.main.txt
 pymorphy2-dicts/
 bugs.txt
