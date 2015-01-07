@@ -18,7 +18,6 @@ LEMMAS_COUNTER = defaultdict(Counter)
 
 
 def log_doubleform(sender, tags_signature):
-    global REPEATED_FORMS
     REPEATED_FORMS.update({tags_signature: 1})
 
 
@@ -26,7 +25,6 @@ def log_lemmas_count(sender, pos_tag, lemmas_tags):
     if len(lemmas_tags) == 1:
         return
 
-    global LEMMAS_COUNTER
     LEMMAS_COUNTER[pos_tag].update([str(", ".join(lemmas_tags))])
 
 
@@ -70,8 +68,7 @@ if __name__ == '__main__':
         doubleform_signal.connect(log_doubleform)
         lemmas_found_signal.connect(log_lemmas_count)
 
-    if (args.in_file.startswith("http://") or
-       args.in_file.startswith("https://")):
+    if args.in_file.startswith(("http://", "https://")):
         args.in_file = download_to_tmp(args.in_file)
 
     if not os.path.exists(args.in_file):
