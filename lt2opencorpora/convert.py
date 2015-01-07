@@ -1,8 +1,10 @@
 import sys
 import gzip
+import os.path
+import bz2file as bz2
 import codecs
 import logging
-import argparse
+
 
 from itertools import ifilter
 import xml.etree.cElementTree as ET
@@ -40,12 +42,12 @@ register('has_not', lambda x, y: y not in x)
 def open_any(filename):
     """
     Helper to open also compressed files
-
-    No BZIP support because of problems with utf-8 in readlines
-    implementation
     """
     if filename.endswith(".gz"):
         return gzip.open
+
+    if filename.endswith(".bz2"):
+        return bz2.BZ2File
 
     return open
 
@@ -225,6 +227,9 @@ class Lemma(object):
 
 class Dictionary(object):
     def __init__(self, fname, mapping):
+        if not mapping:
+            mapping = os.path.join(os.path.dirname(__file__), "mapping.csv")
+
         self.tag_set = TagSet(mapping)
 
         with open_any(fname)(fname, "r") as fp:
@@ -251,53 +256,3 @@ class Dictionary(object):
                 lemmata.append(lemma_xml)
 
         tree.write(fname, encoding="utf-8")
-
-
-if __name__ == '__main__':
-    from collections import Counter, defaultdict
-    REPEATED_FORMS = Counter()
-    LEMMAS_COUNTER = defaultdict(Counter)
-
-    def log_doubleform(sender, tags_signature):
-        global REPEATED_FORMS
-        REPEATED_FORMS.update({tags_signature: 1})
-
-    def log_lemmas_count(sender, pos_tag, lemmas_tags):
-        if len(lemmas_tags) == 1:
-            return
-
-        global LEMMAS_COUNTER
-        LEMMAS_COUNTER[pos_tag].update([str(", ".join(lemmas_tags))])
-
-    parser = argparse.ArgumentParser(
-        description='Convert LT dict to OpenCorpora format.')
-    parser.add_argument(
-        'in_file', help='input file (txt or gzipped txt)')
-    parser.add_argument(
-        'out_file', help='XML to save OpenCorpora dictionary to')
-    parser.add_argument(
-        '--debug',
-        help="Output debug information and collect some useful stats",
-        action='store_true')
-    parser.add_argument(
-        '--mapping', help="File with tags, their relationsheeps and meanigns",
-        default='mapping.csv')
-
-    args = parser.parse_args()
-
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-        doubleform_signal.connect(log_doubleform)
-        lemmas_found_signal.connect(log_lemmas_count)
-
-    d = Dictionary(args.in_file, mapping=args.mapping)
-    d.export_to_xml(args.out_file)
-
-    if args.debug:
-        logging.debug("=" * 50)
-        for term, cnt in REPEATED_FORMS.most_common():
-            logging.debug(u"%s: %s" % (term, cnt))
-
-        logging.debug("=" * 50)
-        for pos, cnt in LEMMAS_COUNTER.iteritems():
-            logging.debug(u"%s: %s" % (pos, cnt.most_common()))

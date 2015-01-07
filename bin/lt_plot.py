@@ -1,13 +1,23 @@
+#!/usr/bin/env python
+import os.path
+import sys
 import pydot
 from unicodecsv import DictReader
 import xml.etree.ElementTree as ET
 
+sys.path.insert(0, ".")
+
+import lt2opencorpora
+
 if __name__ == '__main__':
+    # TODO: argparse
+
+    BASEPATH = os.path.dirname(lt2opencorpora.__file__)
     graph = pydot.Dot(graph_type='digraph')
     nodes_by_opencorpora = {}
     nodes_by_LT = {}
 
-    tree = ET.parse('open_corpora_tagset.xml')
+    tree = ET.parse(os.path.join(BASEPATH, 'open_corpora_tagset.xml'))
     root = tree.getroot()
     for child in root[0]:
         node = pydot.Node(
@@ -17,7 +27,7 @@ if __name__ == '__main__':
         node.parent = ""
         nodes_by_opencorpora[child.find("name").text] = node
 
-    with open("mapping.csv", "r") as fp:
+    with open(os.path.join(BASEPATH, "mapping.csv"), "r") as fp:
         r = DictReader(fp)
 
         for tag in r:

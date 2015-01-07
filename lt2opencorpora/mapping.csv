@@ -34,8 +34,8 @@ v_oru,орудний,CAse,,ablt,
 v_mis,місцевий,CAse,,loct,
 v_kly,кличний,CAse,,voct,
 nv,не відмінюється,CAse,,Fixd,
-np,без множини (для невідмінюваних іменників),CAse,,Sgtm,singular tantum
-ns,без однини,CAse,,Pltm,"Plural tantum. Не використовується у LT, замість нього :p:nv"
+np,без множини (поки лише для невідмінюваних іменників),CAse,,Sgtm,singular tantum
+ns,без однини (поки лише для невідмінюваних іменників),CAse,,Pltm,Plural tantum. Не використовується у LT.
 req_case,потребує відмінка,aux,,req_case,Наразі відсутний в OpenCorpora
 rv_naz,потребує називного,req_case,,rv_nomn,
 rv_rod,потребує родового,req_case,,rv_gent,
@@ -69,16 +69,15 @@ compb,базова форма,forms,,compb,
 compr,порівняльна форма,forms,,COMP,
 super,найвища форма,forms,,Supr,
 ANim,істота/неістота,aux,,ANim,
-anim,істота (людина/людиноподібна істота),ANim,,anim,
+anim,"істота (людина, людиноподібна істота чи тварина)",ANim,,anim,
 inanim,неістота,ANim,,inan,
-extra,додаткові,aux,,extra,
-bad,покруч,extra,,Dist,
-rev,зворотна форма (дієслова),extra,,Refl,
-rare,рідковживане/діалектичне/застаріле,extra,,Arch,
-v-u,альтернативні форми на в-/у- (для правил милозвучності),extra,,v-u,Не має відпопідності в російскій мові
-abbr,абревіатура,extra,,Abbr,
-coll,розмовне,extra,,Infr,
-slang,сленг,extra,,slang,
-unknown,ще неопрацьовані слова/форми,extra,,unknown,Має зникнути взагалі
-pers,особовий (займенник),extra,,pers,
-alt,альтернативний правопис,extra,,alt,
+bad,покруч,aux,,Dist,
+rev,зворотна форма (дієслова),aux,,Refl,
+rare,рідковживане/діалектичне/застаріле,aux,,Arch,
+v-u,альтернативні форми на в-/у- (для правил милозвучності),aux,,v-u,Не має відповідності в російській мові
+abbr,абревіатура,aux,,Abbr,
+coll,розмовне,aux,,Infr,
+slang,сленг,aux,,Slng,
+unknown,ще неопрацьовані слова/форми,aux,,unknown,Має зникнути взагалі
+pers,особовий (займенник),aux,,pers,
+alt,альтернативний правопис,aux,,alt,
