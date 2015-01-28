@@ -188,25 +188,33 @@ class Lemma(object):
     def export_to_xml(self, i, rev=1):
         logging.debug(self.pos)
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
-        lemma_tags = self.tag_set.full[self.pos]["lemma form"]
+        lemma_tags = (set(self.tag_set.full[self.pos]["lemma form"]).union(
+                      [self.pos]))
         lemmas_candidates = []
 
         for forms in self.forms.values():
             for form in forms:
                 el = ET.Element("f", t=form.form.lower())
+
+                # So, we've found a lemma candidate
                 if (form.form == self.word and
                         Q(tags__has_all=lemma_tags)(form)):
-                    l_form = ET.SubElement(lemma, "l", t=form.form.lower())
-                    self._add_tags_to_element(l_form, form.tags)
 
+                    # if it's the first lemma met -
+                    # put the <f> tag on top of the list and add also <l>
                     if not lemmas_candidates:
                         lemma.insert(0, el)
+
+                        l_form = ET.SubElement(lemma, "l", t=form.form.lower())
+                        self._add_tags_to_element(l_form, lemma_tags)
+
+                    # and ignore if it's not the only one
 
                     lemmas_candidates.append(form)
                 else:
                     lemma.append(el)
 
-                self._add_tags_to_element(el, form.tags)
+                self._add_tags_to_element(el, set(form.tags) - lemma_tags)
 
         lemmas_tags = sorted(map(lambda x: x.tags_signature,
                                  lemmas_candidates))
