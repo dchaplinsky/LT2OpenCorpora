@@ -1,0 +1,119 @@
+####################
+
+noun
+//obligatory
+     - case
+     - ANim
+     - nmbr
+       //if s, obligatory
+            gndr
+//maybe
+     - tantum
+     - extra
+
+adj
+//obligatory
+     - case
+     - nmbr
+       //if s, obligatory
+            gndr
+//maybe
+     - forms
+     - extra
+
+adjp
+//obligatory
+     - case
+     - aspc
+     - nmbr
+       //if s, obligatory
+            gndr
+//maybe
+     - extra
+
+verb
+//obligatory
+     - aspc
+//maybe
+     - verb_type
+     - mood
+       //obligatory
+         - pers
+         - nmbr
+     - extra
+//if (not (impers or impr or inf)), obligatory
+     - tense
+       //if (past and s), obligatory
+         - gndr
+
+adv
+//obligatory
+//maybe
+     - forms
+     - extra
+
+advp
+//obligatory
+     - aspc
+//maybe
+     - extra
+
+numr
+//obligatory
+     - case
+//maybe
+     - gndr
+     - nmbr
+     - extra
+
+conj
+//obligatory
+     - conj_type
+//maybe
+     - extra
+
+predic
+//obligatory
+//maybe
+     - extra
+
+insert
+//obligatory
+//maybe
+     - extra
+
+prep
+//obligatory
+     - req_case
+//maybe
+     - extra
+
+excl
+//obligatory
+//maybe
+     - extra
+
+part
+//obligatory
+//maybe
+     - extra
+
+
+pron - soon won't exist as a separate POS anymore. 
+
+####################
+
+We can also check that:
+- every noun has 7-20 forms
+- every adj/adjp has 32-92 forms
+- every verb has 17-27 forms
+- every advp has 1-2 forms
+- every adv/conj/predic/insert/prep/excl/part has only 1 form
+- every noun has 7 different cases in the singular form and/or in the plural form
+- the nouns that have only singular forms have the np tag
+- the nouns that have only plural forms have the ns tag
+- the verbs with the perf tag do not have present tense forms, but have future and past tense forms
+- the verbs with the perf tag have present, future and past tense forms
+- and so on
+
+####################
