@@ -28,7 +28,7 @@ In a nutshell:
 * An excerpt (first 1000 words) from the Ukrainian morphological dictionary.
 
 ## Visualised mapping between the tagsets in a great detail
-![Mapping](http://i.imgur.com/qiP2HSl.png)
+![Mapping](http://i.imgur.com/XNdliU3.png)
 * Cream nodes are for the tags found only in OpenCorpora
 * Blue nodes are for the tags from LanguageTool only
 * Green nodes are for the tags that can be found in both
