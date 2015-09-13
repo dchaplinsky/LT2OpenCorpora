@@ -18,13 +18,12 @@ setup(
     license='MIT license',
     install_requires=[
         'blinker >= 1.3',
-        'liquer >= 0.0.4',
         'unicodecsv >= 0.9.4',
         'bz2file >= 0.98',
         'requests',
     ],
     extras_require={
-        'plot':  ["pydot >= 1.0.2"],
+        'plot': ["pydot >= 1.0.2"],
     },
     zip_safe=False,
     classifiers=[
