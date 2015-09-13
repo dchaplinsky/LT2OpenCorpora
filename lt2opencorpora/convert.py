@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import sys
 import gzip
 import os.path
@@ -5,38 +6,16 @@ import bz2file as bz2
 import codecs
 import logging
 
-
-from itertools import ifilter
 import xml.etree.cElementTree as ET
 
 from unicodecsv import DictReader
-# To simlify some queries over iterables
-from liquer import Q, register
+
 # To add stats collection in inobstrusive way (that can be simply disabled)
 from blinker import signal
 
 
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 doubleform_signal = signal('doubleform-found')
-lemmas_found_signal = signal('lemmas-found')
-
-is_iterable = lambda x: isinstance(x, (dict, list, tuple, set, frozenset))
-
-# Bunch of helpers for liquer lib, most of them aren't used at all
-register('has', lambda x, y: y in x)
-register('ne', lambda x, y: x != y)
-register('has_all',
-         lambda x, y: all(map(lambda y_val: y_val in x,
-                              y if is_iterable(y) else (y,))))
-
-register('has_none',
-         lambda x, y: all(map(lambda y_val: y_val not in x,
-                              y if is_iterable(y) else (y,))))
-
-register('has_any',
-         lambda x, y: any(map(lambda y_val: y_val in x,
-                              y if is_iterable(y) else (y,))))
-register('has_not', lambda x, y: y not in x)
 
 
 def open_any(filename):
@@ -119,13 +98,12 @@ class TagSet(object):
 class WordForm(object):
     """
     Class that represents single word form.
-    Initialized out of raw string from LT dictionary.
+    Initialized out of form and tags strings from LT dictionary.
     """
-    def __init__(self, raw, tag_set):
-        raw = unicode(raw.decode('utf-8'))
-        self.form, self.lemma, self.tags = raw.split(" ", 3)
+    def __init__(self, form, tags, tag_set):
+        self.form, self.tags = form, tags
 
-        self.tags = map(unicode.strip, self.tags.split(u":"))
+        self.tags = map(unicode.strip, self.tags.split(":"))
         self.used = False
 
         # tags signature is string made out of sorted list of wordform tags
@@ -137,46 +115,60 @@ class WordForm(object):
         # wordform
         pos_tags = filter(lambda x: x in tag_set.post, self.tags)
         self.pos = ""
-        self.lemma_signature = tuple()
 
         # And report cases when it's missing or wordform has more than two
         # pos tags assigned
         if len(pos_tags) == 0:
             logging.debug(
-                u"word form %s has no POS tag assigned" % self.form)
+                "word form %s has no POS tag assigned" % self.form)
         elif len(pos_tags) == 1:
             self.pos = pos_tags[0]
 
-            # Black magic, boooo!
-            lemma_form_tags = [self.pos] + tag_set.full[self.pos]["lemma form"]
-            for splitter in tag_set.full[self.pos]["divide by"]:
-                if splitter in self.tags:
-                    lemma_form_tags += [splitter]
-                    break
+            if pos_tags[0] != self.tags[0]:
+                logging.debug(
+                    "word form %s has strange POS tag %s instead of %s"
+                    % (self.form, pos_tags[0], self.tags[0]))
 
+            # Not yet clear if it'll be used or not
+            # lemma_form_tags = [self.pos] + tag_set.full[self.pos]["lemma form"]
 
-            self.lemma_signature = (self.lemma,
-                                    tuple(lemma_form_tags))
+            # for splitter in tag_set.full[self.pos]["divide by"]:
+            #     if splitter in self.tags:
+            #         lemma_form_tags += [splitter]
+            #         break
+
+            # self.lemma_signature = (self.lemma,
+            #                         tuple(lemma_form_tags))
         else:
             logging.debug(
-                u"word form %s has more than one POS tag assigned: %s"
+                "word form %s has more than one POS tag assigned: %s"
                 % (self.form, pos_tags))
 
     def __str__(self):
-        return u"<%s: %s>: %s" % (self.lemma, self.form, self.tags_signature)
+        return "<%s: %s>" % (self.form, self.tags_signature)
+
+    def __unicode__(self):
+        return self.__str__()
 
 
 class Lemma(object):
     def __init__(self, word, lemma_form_tags, tag_set):
         self.word = word
-        self.lemma_form = lemma_form_tags
-        self.pos = lemma_form_tags[0]
+
+        self.lemma_form = WordForm(word, lemma_form_tags, tag_set)
+        self.pos = self.lemma_form.pos
         self.tag_set = tag_set
         self.forms = {}
         self.common_tags = None
 
+        self.add_form(self.lemma_form)
+
     def __str__(self):
-        return u"<%s: %s>" % (self.word, ":".join(self.lemma_form))
+        return "%s" % self.lemma_form
+
+    @property
+    def lemma_signature(self):
+        return tuple(self.common_tags)
 
     def add_form(self, form):
         if self.common_tags is not None:
@@ -191,11 +183,11 @@ class Lemma(object):
             self.forms[form.tags_signature].append(form)
 
             logging.debug(
-                u"lemma %s got %s forms with same tagset %s: %s" %
+                "lemma %s got %s forms with same tagset %s: %s" %
                 (self, len(self.forms[form.tags_signature]),
                  form.tags_signature,
-                 u", ".join(map(lambda x: x.form,
-                                self.forms[form.tags_signature]))))
+                 ", ".join(map(lambda x: x.form,
+                               self.forms[form.tags_signature]))))
         else:
             self.forms[form.tags_signature] = [form]
 
@@ -212,48 +204,18 @@ class Lemma(object):
     def export_to_xml(self, i, rev=1):
         logging.debug(self.lemma_form)
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
-        lemma_tags = self.lemma_form
         common_tags = list(self.common_tags or set())
-        lemmas_candidates = []
+
+        l_form = ET.SubElement(lemma, "l", t=self.lemma_form.form.lower())
+        self._add_tags_to_element(l_form, common_tags)
 
         for forms in self.forms.values():
             for form in forms:
                 el = ET.Element("f", t=form.form.lower())
-
-                # So, we've found a lemma candidate
-                if (form.form == self.word and
-                        Q(tags__has_all=lemma_tags)(form)):
-
-                    # if it's the first lemma met -
-                    # put the <f> tag on top of the list and add also <l>
-                    if not lemmas_candidates:
-                        lemma.insert(0, el)
-
-                        l_form = ET.SubElement(lemma, "l", t=form.form.lower())
-                        self._add_tags_to_element(l_form, common_tags)
-
-                    # and ignore if it's not the only one
-
-                    lemmas_candidates.append(form)
-                else:
-                    lemma.append(el)
+                lemma.append(el)
 
                 self._add_tags_to_element(el,
                                           set(form.tags) - set(common_tags))
-
-        lemmas_tags = sorted(map(lambda x: x.tags_signature,
-                                 lemmas_candidates))
-
-        lemmas_found_signal.send(
-            self, pos_tag=self.lemma_form[0], lemmas_tags=lemmas_tags)
-
-        if len(lemmas_candidates) != 1:
-            logging.debug(
-                u"lemma %s got %s lemmas candidates: %s" %
-                (self, len(lemmas_candidates),
-                 u", ".join(map(unicode, lemmas_candidates))))
-
-            return
 
         return lemma
 
@@ -264,22 +226,32 @@ class Dictionary(object):
             mapping = os.path.join(os.path.dirname(__file__), "mapping.csv")
 
         self.tag_set = TagSet(mapping)
-
-        with open_any(fname)(fname, "r") as fp:
-            dct = map(lambda r: WordForm(r, self.tag_set), fp.readlines())
-
         self.lemmas = {}
 
-        for form in ifilter(Q(lemma_signature__ne=tuple()), dct):
-            lemma = self.lemmas.setdefault(form.lemma_signature,
-                                           Lemma(form.lemma,
-                                                 form.lemma_signature[1],
-                                                 self.tag_set))
+        with open_any(fname)(fname, "r") as fp:
+            current_lemma = None
 
-            lemma.add_form(form)
+            for i, line in enumerate(fp):
+                line = unicode(line.decode('utf-8'))
+                # Here we've found a new lemma, let's add old one to the list
+                # and continue
+                if not line.startswith("  "):
+                    if current_lemma is not None:
+                        self.lemmas[current_lemma.lemma_signature] = \
+                            current_lemma
+
+                    current_lemma = Lemma(
+                        *line.strip().split(" ", 1),
+                        tag_set=self.tag_set)
+                else:
+                    # It's a form of current lemma
+                    current_lemma.add_form(WordForm(
+                        *line.strip().split(" ", 1),
+                        tag_set=self.tag_set
+                    ))
 
     def export_to_xml(self, fname):
-        root = ET.Element("dictionary", version="0.1", revision="1")
+        root = ET.Element("dictionary", version="0.2", revision="1")
         tree = ET.ElementTree(root)
         root.append(self.tag_set.export_to_xml())
         lemmata = ET.SubElement(root, "lemmata")

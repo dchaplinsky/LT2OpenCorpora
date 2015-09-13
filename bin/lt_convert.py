@@ -6,26 +6,18 @@ import shutil
 import os.path
 import requests
 from tempfile import NamedTemporaryFile
-from collections import Counter, defaultdict
+from collections import Counter
 sys.path.insert(0, ".")
 
 from lt2opencorpora.convert import (
-    Dictionary, doubleform_signal, lemmas_found_signal)
+    Dictionary, doubleform_signal)
 
 
 REPEATED_FORMS = Counter()
-LEMMAS_COUNTER = defaultdict(Counter)
 
 
 def log_doubleform(sender, tags_signature):
     REPEATED_FORMS.update({tags_signature: 1})
-
-
-def log_lemmas_count(sender, pos_tag, lemmas_tags):
-    if len(lemmas_tags) == 1:
-        return
-
-    LEMMAS_COUNTER[pos_tag].update([str(", ".join(lemmas_tags))])
 
 
 def download_to_tmp(url):
@@ -66,7 +58,6 @@ if __name__ == '__main__':
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
         doubleform_signal.connect(log_doubleform)
-        lemmas_found_signal.connect(log_lemmas_count)
 
     if args.in_file.startswith(("http://", "https://")):
         args.in_file = download_to_tmp(args.in_file)
@@ -81,7 +72,3 @@ if __name__ == '__main__':
         logging.debug("=" * 50)
         for term, cnt in REPEATED_FORMS.most_common():
             logging.debug(u"%s: %s" % (term, cnt))
-
-        logging.debug("=" * 50)
-        for pos, cnt in LEMMAS_COUNTER.iteritems():
-            logging.debug(u"%s: %s" % (pos, cnt.most_common()))
