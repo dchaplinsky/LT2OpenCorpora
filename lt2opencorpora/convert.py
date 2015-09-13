@@ -168,7 +168,7 @@ class Lemma(object):
 
     @property
     def lemma_signature(self):
-        return tuple(self.common_tags)
+        return (self.word,) + tuple(self.common_tags)
 
     def add_form(self, form):
         if self.common_tags is not None:
@@ -236,9 +236,7 @@ class Dictionary(object):
                 # Here we've found a new lemma, let's add old one to the list
                 # and continue
                 if not line.startswith("  "):
-                    if current_lemma is not None:
-                        self.lemmas[current_lemma.lemma_signature] = \
-                            current_lemma
+                    self.add_lemma(current_lemma)
 
                     current_lemma = Lemma(
                         *line.strip().split(" ", 1),
@@ -249,6 +247,12 @@ class Dictionary(object):
                         *line.strip().split(" ", 1),
                         tag_set=self.tag_set
                     ))
+
+            self.add_lemma(current_lemma)
+
+    def add_lemma(self, lemma):
+        if lemma is not None:
+            self.lemmas[lemma.lemma_signature] = lemma
 
     def export_to_xml(self, fname):
         root = ET.Element("dictionary", version="0.2", revision="1")
