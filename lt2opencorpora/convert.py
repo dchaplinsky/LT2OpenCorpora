@@ -202,9 +202,14 @@ class Lemma(object):
                 ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
     def export_to_xml(self, i, rev=1):
-        logging.debug(self.lemma_form)
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         common_tags = list(self.common_tags or set())
+
+        if not common_tags:
+            logging.debug(
+                "Lemma %s has no tags at all" % self.lemma_form)
+
+            return None
 
         l_form = ET.SubElement(lemma, "l", t=self.lemma_form.form.lower())
         self._add_tags_to_element(l_form, common_tags)
