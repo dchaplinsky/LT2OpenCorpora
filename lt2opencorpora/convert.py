@@ -40,6 +40,7 @@ class TagSet(object):
     def __init__(self, fname):
         self.all = []
         self.full = {}
+        self.groups = []
         self.lt2opencorpora = {}
 
         with open(fname, "r") as fp:
@@ -75,7 +76,33 @@ class TagSet(object):
                 if tag["parent"] != "aux":
                     self.all.append(tag["name"])
 
+                # We are storing order of groups that appears here to later
+                # sort tags by their groups during export
+                if tag["parent"] not in self.groups:
+                    self.groups.append(tag["parent"])
+
                 self.full[tag["name"]] = tag
+
+    def _get_group_no(self, tag_name):
+        """
+        Takes tag name and returns the number of the group to which tag belongs
+        """
+
+        if tag_name in self.full:
+            return self.groups.index(self.full[tag_name]["parent"])
+        else:
+            return len(self.groups)
+
+    def sort_tags(self, tags):
+        def inner_cmp(a, b):
+            a_group = self._get_group_no(a)
+            b_group = self._get_group_no(b)
+
+            if a_group == b_group:
+                return cmp(a, b)
+            return cmp(a_group, b_group)
+
+        return sorted(tags, cmp=inner_cmp)
 
     def export_to_xml(self):
         grammemes = ET.Element("grammemes")
@@ -100,11 +127,11 @@ class WordForm(object):
     Class that represents single word form.
     Initialized out of form and tags strings from LT dictionary.
     """
-    def __init__(self, form, tags, tag_set):
+    def __init__(self, form, tags, tag_set, is_lemma=False):
         self.form, self.tags = form, tags
 
         self.tags = map(unicode.strip, self.tags.split(":"))
-        self.used = False
+        self.is_lemma = is_lemma
 
         # tags signature is string made out of sorted list of wordform tags
         # This is a workout for rare cases when some wordform has
@@ -128,17 +155,6 @@ class WordForm(object):
                 logging.debug(
                     "word form %s has strange POS tag %s instead of %s"
                     % (self.form, pos_tags[0], self.tags[0]))
-
-            # Not yet clear if it'll be used or not
-            # lemma_form_tags = [self.pos] + tag_set.full[self.pos]["lemma form"]
-
-            # for splitter in tag_set.full[self.pos]["divide by"]:
-            #     if splitter in self.tags:
-            #         lemma_form_tags += [splitter]
-            #         break
-
-            # self.lemma_signature = (self.lemma,
-            #                         tuple(lemma_form_tags))
         else:
             logging.debug(
                 "word form %s has more than one POS tag assigned: %s"
@@ -155,7 +171,7 @@ class Lemma(object):
     def __init__(self, word, lemma_form_tags, tag_set):
         self.word = word
 
-        self.lemma_form = WordForm(word, lemma_form_tags, tag_set)
+        self.lemma_form = WordForm(word, lemma_form_tags, tag_set, True)
         self.pos = self.lemma_form.pos
         self.tag_set = tag_set
         self.forms = {}
@@ -196,6 +212,8 @@ class Lemma(object):
             ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[self.pos])
             tags = set(tags) - set([self.pos])
 
+        tags = self.tag_set.sort_tags(tags)
+
         for tag in tags:
             # For rare cases when tag in the dict is not from tagset
             if tag in self.tag_set.lt2opencorpora:
@@ -217,7 +235,10 @@ class Lemma(object):
         for forms in self.forms.values():
             for form in forms:
                 el = ET.Element("f", t=form.form.lower())
-                lemma.append(el)
+                if form.is_lemma:
+                    lemma.insert(1, el)
+                else:
+                    lemma.append(el)
 
                 self._add_tags_to_element(el,
                                           set(form.tags) - set(common_tags))
