@@ -991,15 +991,8 @@
   абераційні adj:p:v_zna
   абераційними adj:p:v_oru
   абераційних adj:p:v_mis
-аберація noun:inanim:f:v_naz
-  аберації noun:inanim:f:v_rod
-  аберації noun:inanim:f:v_dav
-  аберацію noun:inanim:f:v_zna
-  аберацією noun:inanim:f:v_oru
-  аберації noun:inanim:f:v_mis
-  аберації noun:inanim:p:v_naz
-  аберацій noun:inanim:p:v_rod
-  абераціям noun:inanim:p:v_dav
-  аберації noun:inanim:p:v_zna
-  абераціями noun:inanim:p:v_oru
-  абераціях noun:inanim:p:v_mis
+абихто noun:anim:v_naz:&pron:ind
+  абикого noun:anim:v_rod:&pron:ind
+  абикому noun:anim:v_dav:&pron:ind
+  абикого noun:anim:v_zna:&pron:ind
+  абиким noun:anim:v_oru:&pron:ind

@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import re
 import sys
 import gzip
 import os.path
@@ -128,6 +129,10 @@ class WordForm(object):
     Initialized out of form and tags strings from LT dictionary.
     """
     def __init__(self, form, tags, tag_set, is_lemma=False):
+        if ":&pron" in tags:
+            tags = re.sub(
+                "([a-z][^:]+)(.*):&pron((:pers|:refl|:pos|:dem|:def|:int" +
+                "|:rel|:neg|:ind|:gen)+)(.*)", "pron\\3\\2\\4", tags)
         self.form, self.tags = form, tags
 
         self.tags = map(unicode.strip, self.tags.split(":"))
