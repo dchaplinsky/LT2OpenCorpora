@@ -44,17 +44,18 @@ class TagSet(object):
         self.groups = []
         self.lt2opencorpora = {}
 
-        with open(fname, "r") as fp:
+        # with open(fname, "r") as fp:
+        with open(fname, "rb") as fp:
             r = DictReader(fp)
 
             for tag in r:
                 # lemma form column represents set of tags that wordform should
                 # have to be threatened as lemma.
-                tag["lemma form"] = filter(None, map(unicode.strip,
+                tag["lemma form"] = filter(None, map(str.strip,
                                            tag["lemma form"].split(",")))
 
                 tag["divide by"] = filter(
-                    None, map(unicode.strip, tag["divide by"].split(",")))
+                    None, map(str.strip, tag["divide by"].split(",")))
 
                 # opencopropra tags column maps LT tags to OpenCorpora tags
                 # when possible
@@ -135,7 +136,7 @@ class WordForm(object):
                 "|:rel|:neg|:ind|:gen)+)(.*)", "pron\\3\\2\\4", tags)
         self.form, self.tags = form, tags
 
-        self.tags = map(unicode.strip, self.tags.split(":"))
+        self.tags = map(str.strip, self.tags.split(":"))
         self.is_lemma = is_lemma
 
         # tags signature is string made out of sorted list of wordform tags
@@ -145,7 +146,7 @@ class WordForm(object):
 
         # Here we are trying to determine exact part of speech for this
         # wordform
-        pos_tags = filter(lambda x: x in tag_set.post, self.tags)
+        pos_tags = list(filter(lambda x: x in tag_set.post, self.tags))
         self.pos = ""
 
         # And report cases when it's missing or wordform has more than two
@@ -263,7 +264,7 @@ class Dictionary(object):
             current_lemma = None
 
             for i, line in enumerate(fp):
-                line = unicode(line.decode('utf-8'))
+                # line = unicode(line.decode('utf-8'))
                 # Here we've found a new lemma, let's add old one to the list
                 # and continue
                 if not line.startswith("  "):

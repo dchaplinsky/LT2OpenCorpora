@@ -38,4 +38,4 @@ In a nutshell:
 * Orange links are for LT
 
 ## Running
-```python convert.py 1000.txt out.xml --debug```
+```python bin/lt_convert.py 1000.txt out.xml --debug```
