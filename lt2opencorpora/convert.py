@@ -6,6 +6,7 @@ import os.path
 import bz2file as bz2
 import codecs
 import logging
+import six
 
 import xml.etree.cElementTree as ET
 
@@ -17,6 +18,7 @@ from blinker import signal
 
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 doubleform_signal = signal('doubleform-found')
+strip_func = unicode.strip if six.PY2 else str.strip
 
 
 def open_any(filename):
@@ -44,17 +46,18 @@ class TagSet(object):
         self.groups = []
         self.lt2opencorpora = {}
 
-        with open(fname, "r") as fp:
+        mode = "r" if six.PY2 else "rb"
+        with open(fname, mode) as fp:
             r = DictReader(fp)
 
             for tag in r:
                 # lemma form column represents set of tags that wordform should
                 # have to be threatened as lemma.
-                tag["lemma form"] = filter(None, map(unicode.strip,
+                tag["lemma form"] = filter(None, map(strip_func,
                                            tag["lemma form"].split(",")))
 
                 tag["divide by"] = filter(
-                    None, map(unicode.strip, tag["divide by"].split(",")))
+                    None, map(strip_func, tag["divide by"].split(",")))
 
                 # opencopropra tags column maps LT tags to OpenCorpora tags
                 # when possible
@@ -135,7 +138,7 @@ class WordForm(object):
                 "|:rel|:neg|:ind|:gen)+)(.*)", "pron\\3\\2\\4", tags)
         self.form, self.tags = form, tags
 
-        self.tags = map(unicode.strip, self.tags.split(":"))
+        self.tags = map(strip_func, self.tags.split(":"))
         self.is_lemma = is_lemma
 
         # tags signature is string made out of sorted list of wordform tags
@@ -145,7 +148,7 @@ class WordForm(object):
 
         # Here we are trying to determine exact part of speech for this
         # wordform
-        pos_tags = filter(lambda x: x in tag_set.post, self.tags)
+        pos_tags = list(filter(lambda x: x in tag_set.post, self.tags))
         self.pos = ""
 
         # And report cases when it's missing or wordform has more than two
@@ -263,7 +266,8 @@ class Dictionary(object):
             current_lemma = None
 
             for i, line in enumerate(fp):
-                line = unicode(line.decode('utf-8'))
+                if six.PY2:
+                    line = unicode(line.decode('utf-8'))
                 # Here we've found a new lemma, let's add old one to the list
                 # and continue
                 if not line.startswith("  "):
