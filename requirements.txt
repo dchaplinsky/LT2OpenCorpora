@@ -3,4 +3,4 @@ liquer==0.0.4
 unicodecsv==0.14.1
 bz2file==0.98
 pydot==1.2.4
-requests==2.5.1
+requests==2.20.0
