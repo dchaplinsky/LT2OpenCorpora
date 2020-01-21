@@ -82,4 +82,6 @@ slang,сленг,aux,,,Slng,
 unknown,ще неопрацьовані слова/форми,aux,,,unknown,Має зникнути взагалі
 pers,особовий (займенник),aux,,,pers,
 alt,альтернативний правопис,aux,,,alt,
+fname,им'я,aux,,,Name,
+lname,прізвіще,aux,,,Surn,
 init,Ініціали,aux,,,Init,"Не використовується в LanguageTool, доданий для сумісності"
