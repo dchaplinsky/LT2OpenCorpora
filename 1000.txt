@@ -810,23 +810,23 @@
   Абдурахманові noun:anim:m:v_mis:fname
   Абдурахману noun:anim:m:v_mis:fname
   Абдурахмане noun:anim:m:v_kly:fname
-Абдурахманівна noun:anim:f:v_naz:patr
-  Абдурахманівни noun:anim:f:v_rod:patr
-  Абдурахманівні noun:anim:f:v_dav:patr
-  Абдурахманівну noun:anim:f:v_zna:patr
-  Абдурахманівною noun:anim:f:v_oru:patr
-  Абдурахманівні noun:anim:f:v_mis:patr
-  Абдурахманівно noun:anim:f:v_kly:patr
-Абдурахманович noun:anim:m:v_naz:patr
-  Абдурахмановича noun:anim:m:v_rod:patr
-  Абдурахмановичеві noun:anim:m:v_dav:patr
-  Абдурахмановичу noun:anim:m:v_dav:patr
-  Абдурахмановича noun:anim:m:v_zna:patr
-  Абдурахмановичем noun:anim:m:v_oru:patr
-  Абдурахмановичеві noun:anim:m:v_mis:patr
-  Абдурахмановичі noun:anim:m:v_mis:patr
-  Абдурахмановичу noun:anim:m:v_mis:patr
-  Абдурахмановичу noun:anim:m:v_kly:patr
+Абдурахманівна noun:anim:f:v_naz:pname
+  Абдурахманівни noun:anim:f:v_rod:pname
+  Абдурахманівні noun:anim:f:v_dav:pname
+  Абдурахманівну noun:anim:f:v_zna:pname
+  Абдурахманівною noun:anim:f:v_oru:pname
+  Абдурахманівні noun:anim:f:v_mis:pname
+  Абдурахманівно noun:anim:f:v_kly:pname
+Абдурахманович noun:anim:m:v_naz:pname
+  Абдурахмановича noun:anim:m:v_rod:pname
+  Абдурахмановичеві noun:anim:m:v_dav:pname
+  Абдурахмановичу noun:anim:m:v_dav:pname
+  Абдурахмановича noun:anim:m:v_zna:pname
+  Абдурахмановичем noun:anim:m:v_oru:pname
+  Абдурахмановичеві noun:anim:m:v_mis:pname
+  Абдурахмановичі noun:anim:m:v_mis:pname
+  Абдурахмановичу noun:anim:m:v_mis:pname
+  Абдурахмановичу noun:anim:m:v_kly:pname
 абелів adj:m:v_naz
   абелевого adj:m:v_rod
   абелевому adj:m:v_dav
