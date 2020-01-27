@@ -84,4 +84,5 @@ pers,особовий (займенник),aux,,,pers,
 alt,альтернативний правопис,aux,,,alt,
 fname,им'я,aux,,,Name,
 lname,прізвіще,aux,,,Surn,
+pname,по батькові,aux,,,Patr,
 init,Ініціали,aux,,,Init,"Не використовується в LanguageTool, доданий для сумісності"
