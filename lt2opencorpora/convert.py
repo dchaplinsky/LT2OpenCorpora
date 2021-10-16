@@ -3,6 +3,7 @@ import sys
 import gzip
 import os.path
 from filecmp import cmp
+from typing import List, Optional, Set, Union
 import bz2file as bz2
 import codecs
 import logging
@@ -16,7 +17,7 @@ sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 doubleform_signal = signal('doubleform-found')
 
 
-def open_any(filename):
+def open_any(filename: str):
     """
     Helper to open also compressed files
     """
@@ -29,18 +30,19 @@ def open_any(filename):
     return open
 
 
-class TagSet(object):
+class TagSet:
     """
     Class that represents LanguageTool tagset
     Can export it to OpenCorpora XML
     Provides some shorthands to simplify checks/conversions
     """
 
-    def __init__(self, fname):
+    def __init__(self, fname: str) -> None:
         self.all = []
         self.full = {}
         self.groups = []
         self.lt2opencorpora = {}
+        self.post = []
 
         with open(fname, 'r') as fp:
             r = DictReader(fp)
@@ -82,7 +84,7 @@ class TagSet(object):
 
                 self.full[tag["name"]] = tag
 
-    def _get_group_no(self, tag_name):
+    def _get_group_no(self, tag_name: str) -> int:
         """
         Takes tag name and returns the number of the group to which tag belongs
         """
@@ -92,18 +94,18 @@ class TagSet(object):
         else:
             return len(self.groups)
 
-    def sort_tags(self, tags):
-        def inner_cmp(a, b):
+    def sort_tags(self, tags: List[str]) -> List[str]:
+        def inner_cmp(a: str, b: str) -> bool:
             a_group = self._get_group_no(a)
             b_group = self._get_group_no(b)
 
             if a_group == b_group:
                 return cmp(a, b)
-            return cmp(a_group, b_group)
+            return False
 
-        return sorted(tags, cmp=inner_cmp)
+        return sorted(tags, key=inner_cmp)
 
-    def export_to_xml(self):
+    def export_to_xml(self) -> ET.Element:
         grammemes = ET.Element("grammemes")
         for tag in self.full.values():
             grammeme = ET.SubElement(grammemes, "grammeme")
@@ -121,13 +123,13 @@ class TagSet(object):
         return grammemes
 
 
-class WordForm(object):
+class WordForm:
     """
     Class that represents single word form.
     Initialized out of form and tags strings from LT dictionary.
     """
 
-    def __init__(self, form, tags, tag_set, is_lemma=False):
+    def __init__(self, form: str, tags: str, tag_set: TagSet, is_lemma=False) -> None:
         if ":&pron" in tags:
             tags = re.sub(
                 "([a-z][^:]+)(.*):&pron((:pers|:refl|:pos|:dem|:def|:int" +
@@ -164,15 +166,15 @@ class WordForm(object):
                 "word form %s has more than one POS tag assigned: %s"
                 % (self.form, pos_tags))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "<%s: %s>" % (self.form, self.tags_signature)
 
-    def __unicode__(self):
+    def __unicode__(self) -> str:
         return self.__str__()
 
 
-class Lemma(object):
-    def __init__(self, word, lemma_form_tags, tag_set):
+class Lemma:
+    def __init__(self, word: str, lemma_form_tags: str, tag_set: TagSet) -> None:
         self.word = word
 
         self.lemma_form = WordForm(word, lemma_form_tags, tag_set, True)
@@ -183,14 +185,14 @@ class Lemma(object):
 
         self.add_form(self.lemma_form)
 
-    def __str__(self):
-        return "%s" % self.lemma_form
+    def __str__(self) -> str:
+        return str(self.lemma_form)
 
     @property
     def lemma_signature(self):
         return (self.word,) + tuple(self.common_tags)
 
-    def add_form(self, form):
+    def add_form(self, form: WordForm) -> None:
         if self.common_tags is not None:
             self.common_tags = self.common_tags.intersection(form.tags)
         else:
@@ -211,10 +213,10 @@ class Lemma(object):
         else:
             self.forms[form.tags_signature] = [form]
 
-    def _add_tags_to_element(self, el, tags):
+    def _add_tags_to_element(self, el: ET.Element, tags: Union[List[str], Set[str]]) -> None:
         if self.pos in tags:
             ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[self.pos])
-            tags = set(tags) - set([self.pos])
+            tags = set(tags) - {self.pos}
 
         # tags = self.tag_set.sort_tags(tags)
 
@@ -223,7 +225,7 @@ class Lemma(object):
             if tag in self.tag_set.lt2opencorpora:
                 ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
-    def export_to_xml(self, i: int, rev=1):
+    def export_to_xml(self, i: int, rev=1) -> Optional[ET.Element]:
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         common_tags = list(self.common_tags or set())
 
@@ -250,8 +252,8 @@ class Lemma(object):
         return lemma
 
 
-class Dictionary(object):
-    def __init__(self, input_file: str, output_file: str, mapping):
+class Dictionary:
+    def __init__(self, input_file: str, output_file: str, mapping) -> None:
         if not mapping:
             mapping = os.path.join(os.path.dirname(__file__), "mapping.csv")
 
