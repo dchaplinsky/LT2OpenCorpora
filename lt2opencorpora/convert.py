@@ -1,24 +1,19 @@
-from __future__ import unicode_literals
 import re
 import sys
 import gzip
 import os.path
+from filecmp import cmp
 import bz2file as bz2
 import codecs
 import logging
-import six
-
 import xml.etree.cElementTree as ET
-
-from unicodecsv import DictReader
+from csv import DictReader
 
 # To add stats collection in inobstrusive way (that can be simply disabled)
 from blinker import signal
 
-
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 doubleform_signal = signal('doubleform-found')
-strip_func = unicode.strip if six.PY2 else str.strip
 
 
 def open_any(filename):
@@ -40,29 +35,29 @@ class TagSet(object):
     Can export it to OpenCorpora XML
     Provides some shorthands to simplify checks/conversions
     """
+
     def __init__(self, fname):
         self.all = []
         self.full = {}
         self.groups = []
         self.lt2opencorpora = {}
 
-        mode = "r" if six.PY2 else "rb"
-        with open(fname, mode) as fp:
+        with open(fname, 'r') as fp:
             r = DictReader(fp)
 
             for tag in r:
                 # lemma form column represents set of tags that wordform should
                 # have to be threatened as lemma.
-                tag["lemma form"] = filter(None, map(strip_func,
-                                           tag["lemma form"].split(",")))
+                tag["lemma form"] = filter(None, map(lambda x: x.strip,
+                                                     tag["lemma form"].split(",")))
 
                 tag["divide by"] = filter(
-                    None, map(strip_func, tag["divide by"].split(",")))
+                    None, map(lambda x: x.strip, tag["divide by"].split(",")))
 
                 # opencopropra tags column maps LT tags to OpenCorpora tags
                 # when possible
                 tag["opencorpora tags"] = (
-                    tag["opencorpora tags"] or tag["name"])
+                        tag["opencorpora tags"] or tag["name"])
 
                 # Helper mapping
                 self.lt2opencorpora[tag["name"]] = tag["opencorpora tags"]
@@ -131,6 +126,7 @@ class WordForm(object):
     Class that represents single word form.
     Initialized out of form and tags strings from LT dictionary.
     """
+
     def __init__(self, form, tags, tag_set, is_lemma=False):
         if ":&pron" in tags:
             tags = re.sub(
@@ -138,7 +134,7 @@ class WordForm(object):
                 "|:rel|:neg|:ind|:gen)+)(.*)", "pron\\3\\2\\4", tags)
         self.form, self.tags = form, tags
 
-        self.tags = map(strip_func, self.tags.split(":"))
+        self.tags = list(map(lambda x: x.strip(), self.tags.split(":")))
         self.is_lemma = is_lemma
 
         # tags signature is string made out of sorted list of wordform tags
@@ -220,14 +216,14 @@ class Lemma(object):
             ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[self.pos])
             tags = set(tags) - set([self.pos])
 
-        tags = self.tag_set.sort_tags(tags)
+        # tags = self.tag_set.sort_tags(tags)
 
         for tag in tags:
             # For rare cases when tag in the dict is not from tagset
             if tag in self.tag_set.lt2opencorpora:
                 ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[tag])
 
-    def export_to_xml(self, i, rev=1):
+    def export_to_xml(self, i: int, rev=1):
         lemma = ET.Element("lemma", id=str(i), rev=str(rev))
         common_tags = list(self.common_tags or set())
 
@@ -255,22 +251,28 @@ class Lemma(object):
 
 
 class Dictionary(object):
-    def __init__(self, fname, mapping):
+    def __init__(self, input_file: str, output_file: str, mapping):
         if not mapping:
             mapping = os.path.join(os.path.dirname(__file__), "mapping.csv")
 
         self.tag_set = TagSet(mapping)
-        self.lemmas = {}
+        self.output_file = output_file
 
-        with open_any(fname)(fname, "r") as fp:
+        self.lemmata = ET.Element("lemmata")
+        self.tree = ET.ElementTree(self.lemmata)
+        self.counter = 1
+
+        with open_any(input_file)(input_file, "r") as fp:
             current_lemma = None
 
             for i, line in enumerate(fp):
-                if six.PY2:
-                    line = unicode(line.decode('utf-8'))
                 # Here we've found a new lemma, let's add old one to the list
                 # and continue
                 if not line.startswith("  "):
+                    if self.counter % 100_000 == 0:
+                        # we should write text to file to prevent RAM hit
+                        self.write_tree()
+
                     self.add_lemma(current_lemma)
 
                     current_lemma = Lemma(
@@ -284,20 +286,37 @@ class Dictionary(object):
                     ))
 
             self.add_lemma(current_lemma)
+        self.write_tree()
+        self.write_final()
 
-    def add_lemma(self, lemma):
+    def add_lemma(self, lemma: Lemma):
         if lemma is not None:
-            self.lemmas[lemma.lemma_signature] = lemma
-
-    def export_to_xml(self, fname):
-        root = ET.Element("dictionary", version="0.2", revision="1")
-        tree = ET.ElementTree(root)
-        root.append(self.tag_set.export_to_xml())
-        lemmata = ET.SubElement(root, "lemmata")
-
-        for i, lemma in enumerate(self.lemmas.values()):
-            lemma_xml = lemma.export_to_xml(i + 1)
+            lemma_xml = lemma.export_to_xml(self.counter)
             if lemma_xml is not None:
-                lemmata.append(lemma_xml)
+                self.counter += 1
+                self.lemmata.append(lemma_xml)
 
-        tree.write(fname, encoding="utf-8")
+    def write_tree(self):
+        self.tree.write('temp.xml', encoding="utf-8")
+        with open('temp.xml') as f:
+            file_content = f.read()
+            file_content = '\n' + file_content[9:-10]
+            with open('result.xml', 'a') as af:
+                af.write(file_content)
+        os.remove('{}/temp.xml'.format(os.path.abspath(os.getcwd())))
+        self.lemmata.clear()
+
+    def write_final(self):
+        # line where to insert result.xml
+        template_start = 440
+        with open(self.output_file, 'w') as of:
+            with open('template.xml') as tf:
+                counter = 0
+                for line in tf:
+                    counter += 1
+                    if counter == template_start:
+                        with open('result.xml') as rf:
+                            for result_line in rf:
+                                of.write(result_line)
+                    of.write(line)
+        os.remove('{}/result.xml'.format(os.path.abspath(os.getcwd())))

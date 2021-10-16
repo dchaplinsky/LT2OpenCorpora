@@ -1,0 +1,441 @@
+<dictionary version="0.2" revision="1">
+    <grammemes>
+        <grammeme>
+            <name>POST</name>
+            <alias>post</alias>
+            <description>частина мови</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>NOUN</name>
+            <alias>noun</alias>
+            <description>іменник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>NPRO</name>
+            <alias>pron</alias>
+            <description>займенник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>VERB</name>
+            <alias>verb</alias>
+            <description>дієслово</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>ADJF</name>
+            <alias>adj</alias>
+            <description>прикметник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>PRTF</name>
+            <alias>adjp</alias>
+            <description>дієприкметник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>ADVB</name>
+            <alias>adv</alias>
+            <description>прислівник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>GRND</name>
+            <alias>advp</alias>
+            <description>дієприслівник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>PREP</name>
+            <alias>prep</alias>
+            <description>прийменник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>PRED</name>
+            <alias>predic</alias>
+            <description>присудкове слово</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>Prnt</name>
+            <alias>insert</alias>
+            <description>вставне слово</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>CONJ</name>
+            <alias>conj</alias>
+            <description>сполучник</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>PRCL</name>
+            <alias>part</alias>
+            <description>частка</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>INTJ</name>
+            <alias>excl</alias>
+            <description>вигук</description>
+        </grammeme>
+        <grammeme parent="post">
+            <name>NUMR</name>
+            <alias>numr</alias>
+            <description>числівник</description>
+        </grammeme>
+        <grammeme>
+            <name>NMbr</name>
+            <alias>nmbr</alias>
+            <description>число</description>
+        </grammeme>
+        <grammeme parent="nmbr">
+            <name>plur</name>
+            <alias>p</alias>
+            <description>множина</description>
+        </grammeme>
+        <grammeme parent="nmbr">
+            <name>sing</name>
+            <alias>s</alias>
+            <description>однина</description>
+        </grammeme>
+        <grammeme>
+            <name>GNdr</name>
+            <alias>gndr</alias>
+            <description>рід</description>
+        </grammeme>
+        <grammeme parent="gndr">
+            <name>masc</name>
+            <alias>m</alias>
+            <description>чоловічий</description>
+        </grammeme>
+        <grammeme parent="gndr">
+            <name>femn</name>
+            <alias>f</alias>
+            <description>жіночий</description>
+        </grammeme>
+        <grammeme parent="gndr">
+            <name>neut</name>
+            <alias>n</alias>
+            <description>середній</description>
+        </grammeme>
+        <grammeme>
+            <name>PErs</name>
+            <alias>PErs</alias>
+            <description>особа</description>
+        </grammeme>
+        <grammeme parent="PErs">
+            <name>1per</name>
+            <alias>1</alias>
+            <description>1-а особа</description>
+        </grammeme>
+        <grammeme parent="PErs">
+            <name>2per</name>
+            <alias>2</alias>
+            <description>2-а особа</description>
+        </grammeme>
+        <grammeme parent="PErs">
+            <name>3per</name>
+            <alias>3</alias>
+            <description>3-а особа</description>
+        </grammeme>
+        <grammeme>
+            <name>CAse</name>
+            <alias>CAse</alias>
+            <description>відмінок</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>nomn</name>
+            <alias>v_naz</alias>
+            <description>називний</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>gent</name>
+            <alias>v_rod</alias>
+            <description>родовий</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>datv</name>
+            <alias>v_dav</alias>
+            <description>давальний</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>accs</name>
+            <alias>v_zna</alias>
+            <description>знахідний</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>ablt</name>
+            <alias>v_oru</alias>
+            <description>орудний</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>loct</name>
+            <alias>v_mis</alias>
+            <description>місцевий</description>
+        </grammeme>
+        <grammeme parent="CAse">
+            <name>voct</name>
+            <alias>v_kly</alias>
+            <description>кличний</description>
+        </grammeme>
+        <grammeme>
+            <name>tantum</name>
+            <alias>tantum</alias>
+            <description>singularia/pluralia tantum</description>
+        </grammeme>
+        <grammeme parent="tantum">
+            <name>Sgtm</name>
+            <alias>np</alias>
+            <description>без множини (поки лише для невідмінюваних іменників)</description>
+        </grammeme>
+        <grammeme parent="tantum">
+            <name>Pltm</name>
+            <alias>ns</alias>
+            <description>без однини (поки лише для невідмінюваних іменників)</description>
+        </grammeme>
+        <grammeme>
+            <name>req_case</name>
+            <alias>req_case</alias>
+            <description>потребує відмінка</description>
+        </grammeme>
+        <grammeme parent="req_case">
+            <name>rv_nomn</name>
+            <alias>rv_naz</alias>
+            <description>потребує називного</description>
+        </grammeme>
+        <grammeme parent="req_case">
+            <name>rv_gent</name>
+            <alias>rv_rod</alias>
+            <description>потребує родового</description>
+        </grammeme>
+        <grammeme parent="req_case">
+            <name>rv_datv</name>
+            <alias>rv_dav</alias>
+            <description>потребує давального</description>
+        </grammeme>
+        <grammeme parent="req_case">
+            <name>rv_accs</name>
+            <alias>rv_zna</alias>
+            <description>потребує знахідного</description>
+        </grammeme>
+        <grammeme parent="req_case">
+            <name>rv_ablt</name>
+            <alias>rv_oru</alias>
+            <description>потребує орудного</description>
+        </grammeme>
+        <grammeme parent="req_case">
+            <name>rv_loct</name>
+            <alias>rv_mis</alias>
+            <description>потребує місцевого</description>
+        </grammeme>
+        <grammeme>
+            <name>TEns</name>
+            <alias>tense</alias>
+            <description>час</description>
+        </grammeme>
+        <grammeme parent="tense">
+            <name>futr</name>
+            <alias>futr</alias>
+            <description>майбутній час</description>
+        </grammeme>
+        <grammeme parent="tense">
+            <name>past</name>
+            <alias>past</alias>
+            <description>минулий час</description>
+        </grammeme>
+        <grammeme parent="tense">
+            <name>pres</name>
+            <alias>pres</alias>
+            <description>теперішній час</description>
+        </grammeme>
+        <grammeme>
+            <name>MOod</name>
+            <alias>mood</alias>
+            <description>спосіб</description>
+        </grammeme>
+        <grammeme parent="mood">
+            <name>impr</name>
+            <alias>impr</alias>
+            <description>наказовий спосіб</description>
+        </grammeme>
+        <grammeme>
+            <name>verb_type</name>
+            <alias>verb_type</alias>
+            <description>форма дієслова</description>
+        </grammeme>
+        <grammeme parent="verb_type">
+            <name>infn</name>
+            <alias>inf</alias>
+            <description>початкова форма дієслова</description>
+        </grammeme>
+        <grammeme parent="verb_type">
+            <name>Impe</name>
+            <alias>impers</alias>
+            <description>безособова форма дієслова</description>
+        </grammeme>
+        <grammeme>
+            <name>VOic</name>
+            <alias>voice</alias>
+            <description>стан</description>
+        </grammeme>
+        <grammeme parent="voice">
+            <name>actv</name>
+            <alias>actv</alias>
+            <description>активний</description>
+        </grammeme>
+        <grammeme parent="voice">
+            <name>pssv</name>
+            <alias>pasv</alias>
+            <description>пасивний</description>
+        </grammeme>
+        <grammeme>
+            <name>conj_type</name>
+            <alias>conj_type</alias>
+            <description>вид сполучника</description>
+        </grammeme>
+        <grammeme parent="conj_type">
+            <name>subord</name>
+            <alias>subord</alias>
+            <description>підрядний (сполучник)</description>
+        </grammeme>
+        <grammeme parent="conj_type">
+            <name>coord</name>
+            <alias>coord</alias>
+            <description>сурядний (сполучник)</description>
+        </grammeme>
+        <grammeme>
+            <name>ASpc</name>
+            <alias>aspc</alias>
+            <description>вид</description>
+        </grammeme>
+        <grammeme parent="aspc">
+            <name>perf</name>
+            <alias>perf</alias>
+            <description>доконане</description>
+        </grammeme>
+        <grammeme parent="aspc">
+            <name>impf</name>
+            <alias>imperf</alias>
+            <description>недоконане</description>
+        </grammeme>
+        <grammeme>
+            <name>TRns</name>
+            <alias>trns</alias>
+            <description>категорія перехідності</description>
+        </grammeme>
+        <grammeme parent="trns">
+            <name>tran</name>
+            <alias>tran</alias>
+            <description>перехідне</description>
+        </grammeme>
+        <grammeme parent="trns">
+            <name>intr</name>
+            <alias>intran</alias>
+            <description>непрехідне</description>
+        </grammeme>
+        <grammeme>
+            <name>forms</name>
+            <alias>forms</alias>
+            <description>степені порівняння</description>
+        </grammeme>
+        <grammeme parent="forms">
+            <name>compb</name>
+            <alias>compb</alias>
+            <description>базова форма</description>
+        </grammeme>
+        <grammeme parent="forms">
+            <name>COMP</name>
+            <alias>compr</alias>
+            <description>порівняльна форма</description>
+        </grammeme>
+        <grammeme parent="forms">
+            <name>Supr</name>
+            <alias>super</alias>
+            <description>найвища форма</description>
+        </grammeme>
+        <grammeme>
+            <name>ANim</name>
+            <alias>ANim</alias>
+            <description>істота/неістота</description>
+        </grammeme>
+        <grammeme parent="ANim">
+            <name>anim</name>
+            <alias>anim</alias>
+            <description>істота (людина, людиноподібна істота чи тварина)</description>
+        </grammeme>
+        <grammeme parent="ANim">
+            <name>inan</name>
+            <alias>inanim</alias>
+            <description>неістота</description>
+        </grammeme>
+        <grammeme>
+            <name>Fixd</name>
+            <alias>nv</alias>
+            <description>не відмінюється</description>
+        </grammeme>
+        <grammeme>
+            <name>Dist</name>
+            <alias>bad</alias>
+            <description>покруч</description>
+        </grammeme>
+        <grammeme>
+            <name>Refl</name>
+            <alias>rev</alias>
+            <description>зворотна форма (дієслова)</description>
+        </grammeme>
+        <grammeme>
+            <name>Arch</name>
+            <alias>rare</alias>
+            <description>рідковживане/діалектичне/застаріле</description>
+        </grammeme>
+        <grammeme>
+            <name>v-u</name>
+            <alias>v-u</alias>
+            <description>альтернативні форми на в-/у- (для правил милозвучності)</description>
+        </grammeme>
+        <grammeme>
+            <name>Abbr</name>
+            <alias>abbr</alias>
+            <description>абревіатура</description>
+        </grammeme>
+        <grammeme>
+            <name>Infr</name>
+            <alias>coll</alias>
+            <description>розмовне</description>
+        </grammeme>
+        <grammeme>
+            <name>Slng</name>
+            <alias>slang</alias>
+            <description>сленг</description>
+        </grammeme>
+        <grammeme>
+            <name>unknown</name>
+            <alias>unknown</alias>
+            <description>ще неопрацьовані слова/форми</description>
+        </grammeme>
+        <grammeme>
+            <name>pers</name>
+            <alias>pers</alias>
+            <description>особовий (займенник)</description>
+        </grammeme>
+        <grammeme>
+            <name>alt</name>
+            <alias>alt</alias>
+            <description>альтернативний правопис</description>
+        </grammeme>
+        <grammeme>
+            <name>Name</name>
+            <alias>fname</alias>
+            <description>им'я</description>
+        </grammeme>
+        <grammeme>
+            <name>Surn</name>
+            <alias>lname</alias>
+            <description>прізвіще</description>
+        </grammeme>
+        <grammeme>
+            <name>Patr</name>
+            <alias>pname</alias>
+            <description>по батькові</description>
+        </grammeme>
+        <grammeme>
+            <name>Init</name>
+            <alias>init</alias>
+            <description>Ініціали</description>
+        </grammeme>
+    </grammemes>
+    <lemmata>
+    </lemmata>
+</dictionary>
