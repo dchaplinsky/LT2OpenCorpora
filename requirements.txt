@@ -4,3 +4,5 @@ unicodecsv==0.14.1
 bz2file==0.98
 pydot==1.2.4
 requests==2.5.1
+setuptools~=57.0.0
+six~=1.16.0
