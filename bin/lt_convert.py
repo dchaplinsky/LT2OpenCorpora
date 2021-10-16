@@ -7,16 +7,14 @@ import os.path
 import requests
 from tempfile import NamedTemporaryFile
 from collections import Counter
+from lt2opencorpora.convert import Dictionary, doubleform_signal
 
 sys.path.insert(0, ".")
-
-from lt2opencorpora.convert import (
-    Dictionary, doubleform_signal)
 
 REPEATED_FORMS = Counter()
 
 
-def log_doubleform(sender, tags_signature):
+def log_double_form(sender, tags_signature):
     REPEATED_FORMS.update({tags_signature: 1})
 
 
@@ -57,7 +55,7 @@ if __name__ == '__main__':
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
-        doubleform_signal.connect(log_doubleform)
+        doubleform_signal.connect(log_double_form)
 
     if args.in_file.startswith(("http://", "https://")):
         args.in_file = download_to_tmp(args.in_file)
