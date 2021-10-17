@@ -251,7 +251,7 @@ class Lemma:
 
 
 class Dictionary:
-    def __init__(self, input_file: str, output_file: str, mapping) -> None:
+    def __init__(self, input_file: str, output_file: str, mapping: str) -> None:
         if not mapping:
             mapping = os.path.join(os.path.dirname(__file__), "mapping.csv")
 
@@ -297,13 +297,10 @@ class Dictionary:
                 self.lemmata.append(lemma_xml)
 
     def write_tree(self):
-        self.tree.write('temp.xml', encoding="utf-8")
-        with open('temp.xml') as f:
-            file_content = f.read()
-            file_content = '\n' + file_content[9:-10]
-            with open('result.xml', 'a') as af:
-                af.write(file_content)
-        os.remove('{}/temp.xml'.format(os.path.abspath(os.getcwd())))
+        xml = ET.tostring(self.lemmata, encoding='unicode')
+        xml = '\n' + xml[9:-10]
+        with open('temp.xml', 'a') as f:
+            f.write(xml)
         self.lemmata.clear()
 
     def write_final(self):
@@ -315,8 +312,8 @@ class Dictionary:
                 for line in tf:
                     counter += 1
                     if counter == template_start:
-                        with open('result.xml') as rf:
+                        with open('temp.xml') as rf:
                             for result_line in rf:
                                 of.write(result_line)
                     of.write(line)
-        os.remove('{}/result.xml'.format(os.path.abspath(os.getcwd())))
+        os.remove('{}/temp.xml'.format(os.path.abspath(os.getcwd())))
