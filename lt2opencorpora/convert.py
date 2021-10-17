@@ -291,16 +291,11 @@ class Dictionary:
 
     @staticmethod
     def export_to_xml(out_file: str):
-        # line where to insert result.xml
-        template_start = 440
         with open(out_file, 'w') as of:
-            with open('template.xml') as tf:
-                counter = 0
-                for line in tf:
-                    counter += 1
-                    if counter == template_start:
-                        with open('temp.xml') as rf:
-                            for result_line in rf:
-                                of.write(result_line)
-                    of.write(line)
+            with open('template_start.xml') as tf:
+                of.write(tf.read())
+            with open('temp.xml') as rf:
+                for result_line in rf:
+                    of.write(result_line)
+            of.write('\n</lemmata></dictionary>')
         os.remove('{}/temp.xml'.format(os.path.abspath(os.getcwd())))
