@@ -50,11 +50,9 @@ class TagSet:
             for tag in r:
                 # lemma form column represents set of tags that wordform should
                 # have to be threatened as lemma.
-                tag["lemma form"] = filter(None, map(lambda x: x.strip,
-                                                     tag["lemma form"].split(",")))
+                tag["lemma form"] = filter(None, map(str.strip, tag["lemma form"].split(",")))
 
-                tag["divide by"] = filter(
-                    None, map(lambda x: x.strip, tag["divide by"].split(",")))
+                tag["divide by"] = filter(None, map(str.strip, tag["divide by"].split(",")))
 
                 # opencopropra tags column maps LT tags to OpenCorpora tags
                 # when possible
@@ -136,7 +134,7 @@ class WordForm:
                 "|:rel|:neg|:ind|:gen)+)(.*)", "pron\\3\\2\\4", tags)
         self.form, self.tags = form, tags
 
-        self.tags = list(map(lambda x: x.strip(), self.tags.split(":")))
+        self.tags = list(map(str.strip, self.tags.split(":")))
         self.is_lemma = is_lemma
 
         # tags signature is string made out of sorted list of wordform tags
