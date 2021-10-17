@@ -251,12 +251,11 @@ class Lemma:
 
 
 class Dictionary:
-    def __init__(self, input_file: str, output_file: str, mapping: str) -> None:
+    def __init__(self, input_file: str, mapping: str) -> None:
         if not mapping:
             mapping = os.path.join(os.path.dirname(__file__), "mapping.csv")
 
         self.tag_set = TagSet(mapping)
-        self.output_file = output_file
 
         self.counter = 1
         self.total_xml = ''
@@ -286,7 +285,6 @@ class Dictionary:
 
             self.add_lemma(current_lemma)
         self.write_tree()
-        self.write_final()
 
     def add_lemma(self, lemma: Lemma):
         if lemma is not None:
@@ -300,10 +298,11 @@ class Dictionary:
             f.write('\n{}'.format(self.total_xml))
         self.total_xml = ''
 
-    def write_final(self):
+    @staticmethod
+    def export_to_xml(out_file: str):
         # line where to insert result.xml
         template_start = 440
-        with open(self.output_file, 'w') as of:
+        with open(out_file, 'w') as of:
             with open('template.xml') as tf:
                 counter = 0
                 for line in tf:

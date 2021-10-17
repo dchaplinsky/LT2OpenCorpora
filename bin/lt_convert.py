@@ -63,7 +63,8 @@ if __name__ == '__main__':
     if not os.path.exists(args.in_file):
         exit("In file doesn't exists or cannot be downloaded")
 
-    Dictionary(args.in_file, args.out_file, mapping=args.mapping)
+    d = Dictionary(args.in_file, mapping=args.mapping)
+    d.export_to_xml(args.out_file)
 
     if args.debug:
         logging.debug("=" * 50)
