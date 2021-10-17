@@ -4,7 +4,7 @@ import gzip
 import os.path
 from filecmp import cmp
 from typing import List, Optional, Set, Union
-import bz2file as bz2
+import bz2
 import codecs
 import logging
 import xml.etree.cElementTree as ET
