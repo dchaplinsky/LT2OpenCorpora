@@ -258,9 +258,8 @@ class Dictionary:
         self.tag_set = TagSet(mapping)
         self.output_file = output_file
 
-        self.lemmata = ET.Element("lemmata")
-        self.tree = ET.ElementTree(self.lemmata)
         self.counter = 1
+        self.total_xml = ''
 
         with open_any(input_file)(input_file, "r") as fp:
             current_lemma = None
@@ -294,14 +293,12 @@ class Dictionary:
             lemma_xml = lemma.export_to_xml(self.counter)
             if lemma_xml is not None:
                 self.counter += 1
-                self.lemmata.append(lemma_xml)
+                self.total_xml += ET.tostring(lemma_xml, encoding='unicode')
 
     def write_tree(self):
-        xml = ET.tostring(self.lemmata, encoding='unicode')
-        xml = '\n' + xml[9:-10]
         with open('temp.xml', 'a') as f:
-            f.write(xml)
-        self.lemmata.clear()
+            f.write('\n{}'.format(self.total_xml))
+        self.total_xml = ''
 
     def write_final(self):
         # line where to insert result.xml
