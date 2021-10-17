@@ -2,7 +2,6 @@ import re
 import sys
 import gzip
 import os.path
-from filecmp import cmp
 from typing import List, Optional, Set, Union
 import bz2
 import codecs
@@ -93,15 +92,7 @@ class TagSet:
             return len(self.groups)
 
     def sort_tags(self, tags: List[str]) -> List[str]:
-        def inner_cmp(a: str, b: str) -> bool:
-            a_group = self._get_group_no(a)
-            b_group = self._get_group_no(b)
-
-            if a_group == b_group:
-                return cmp(a, b)
-            return False
-
-        return sorted(tags, key=inner_cmp)
+        return sorted(tags, key=lambda x: (self._get_group_no(x), x))
 
     def export_to_xml(self) -> ET.Element:
         grammemes = ET.Element("grammemes")
@@ -216,7 +207,7 @@ class Lemma:
             ET.SubElement(el, "g", v=self.tag_set.lt2opencorpora[self.pos])
             tags = set(tags) - {self.pos}
 
-        # tags = self.tag_set.sort_tags(tags)
+        tags = self.tag_set.sort_tags(tags)
 
         for tag in tags:
             # For rare cases when tag in the dict is not from tagset
