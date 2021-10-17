@@ -4,10 +4,9 @@ import sys
 import pydot
 from csv import DictReader
 import xml.etree.ElementTree as ET
+import lt2opencorpora
 
 sys.path.insert(0, ".")
-
-import lt2opencorpora
 
 if __name__ == '__main__':
     # TODO: argparse
@@ -32,7 +31,7 @@ if __name__ == '__main__':
 
         for tag in r:
             tag["opencorpora tags"] = (
-                tag["opencorpora tags"] or tag["name"])
+                    tag["opencorpora tags"] or tag["name"])
 
             name = "%s\n%s" % (tag["name"], tag["opencorpora tags"])
 
@@ -51,12 +50,12 @@ if __name__ == '__main__':
             nodes_by_LT[tag["name"]] = node
             nodes_by_opencorpora[tag["opencorpora tags"]] = node
 
-    for k, node in nodes_by_opencorpora.iteritems():
+    for k, node in nodes_by_opencorpora.items():
         graph.add_node(node)
 
         if node.parent and node.parent != "aux":
             graph.add_edge(pydot.Edge(node, nodes_by_LT[node.parent],
-                           color="orange"))
+                                      color="orange"))
 
         if node.ru_parent:
             graph.add_edge(
