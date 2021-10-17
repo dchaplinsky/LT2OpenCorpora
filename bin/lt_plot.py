@@ -2,7 +2,7 @@
 import os.path
 import sys
 import pydot
-from unicodecsv import DictReader
+from csv import DictReader
 import xml.etree.ElementTree as ET
 
 sys.path.insert(0, ".")
